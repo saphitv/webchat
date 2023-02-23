@@ -1,0 +1,59 @@
+{
+  "name": "node-security",
+  "version": "0.0.0",
+  "notes": {
+    "extra-cli-options": "--ssl true --ssl-key server/cert/key.pem --ssl-cert server/cert/cert.pem"
+  },
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve --proxy-config proxy.json --ssl true --ssl-key cert/key.pem --ssl-cert cert/certificate.pem",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test",
+    "auth_server": "nodemon auth_server/bin/www --watch 'auth_server/**/*.js'",
+    "chat_server": "nodemon chat_server/bin/www --watch 'chat_server/**/*.js'"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "^14.1.0",
+    "@angular/common": "^14.1.0",
+    "@angular/compiler": "^14.1.0",
+    "@angular/core": "^14.1.0",
+    "@angular/forms": "^14.1.0",
+    "@angular/platform-browser": "^14.1.0",
+    "@angular/platform-browser-dynamic": "^14.1.0",
+    "@angular/router": "^14.1.0",
+    "argon2": "^0.30.3",
+    "cookie-parser": "^1.4.6",
+    "daisyui": "^2.46.0",
+    "debug": "^4.3.4",
+    "express": "^4.18.2",
+    "http-errors": "^2.0.0",
+    "jsonwebtoken": "^9.0.0",
+    "lodash": "^4.17.21",
+    "moment": "^2.29.4",
+    "morgan": "^1.10.0",
+    "password-validator": "^5.3.0",
+    "rxjs": "~7.5.0",
+    "tslib": "^2.3.0",
+    "zone.js": "~0.11.4"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "^14.1.1",
+    "@angular/cli": "~14.1.1",
+    "@angular/compiler-cli": "^14.1.0",
+    "@types/jasmine": "~4.0.0",
+    "@types/lodash": "^4.14.191",
+    "autoprefixer": "^10.4.13",
+    "jasmine-core": "~4.2.0",
+    "karma": "~6.4.0",
+    "karma-chrome-launcher": "~3.1.0",
+    "karma-coverage": "~2.2.0",
+    "karma-jasmine": "~5.1.0",
+    "karma-jasmine-html-reporter": "~2.0.0",
+    "nodemon": "^2.0.20",
+    "postcss": "^8.4.20",
+    "tailwindcss": "^3.2.4",
+    "typescript": "~4.7.2"
+  }
+}
