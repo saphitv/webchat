@@ -7,7 +7,7 @@
 const app = require('../app');
 const debug = require('debug')('auth_server:auth_server');
 const https = require('https');
-const {PRIVATE_KEY, PUBLIC_KEY} = require("../data/security.utils");
+const {PRIVATE_KEY, PUBLIC_KEY} = require("../../auth_server/data/security.utils");
 
 /**
  * Get port from environment and store in Express.

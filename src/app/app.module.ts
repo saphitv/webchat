@@ -8,6 +8,14 @@ import {AuthService} from "./services/auth.service";
 import {RbacAllowDirective} from './directives/rbac-allow.directive';
 import {Router} from "@angular/router";
 import {AuthorizationGuard} from "./services/authorization.guard";
+import {SocketIoConfig, SocketIoModule} from "ngx-socket-io";
+
+const config: SocketIoConfig = {
+  url: 'https://localhost:3001', // socket server url;
+  options: {
+    transports: ['websocket']
+  }
+}
 
 @NgModule({
   declarations: [
@@ -18,7 +26,7 @@ import {AuthorizationGuard} from "./services/authorization.guard";
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-
+    SocketIoModule.forRoot(config)
   ],
   providers: [AuthService, {
     provide: 'adminsOnlyGuard',
