@@ -2,60 +2,56 @@ import {Component, OnInit} from '@angular/core';
 import {AuthService} from "./services/auth.service";
 import {map, Observable} from "rxjs";
 import {Router} from "@angular/router";
+import {ThemeService} from "./core/services/theme.service";
+import {SidebarService} from "./core/services/sidebar.service";
 
 @Component({
   selector: 'app-root',
   template: `
-    <div class="hero min-h-[80vh]">
-      <div class="hero-content text-center">
-        <img
-          src="https://m.media-amazon.com/images/M/MV5BNjFiZTllM2ItMDBmMy00YjczLTgxMDktYmZhMWY4MDAyMjRlXkEyXkFqcGdeQXZ3ZXNsZXk@._V1_.jpg"
-          class="max-w-sm rounded-lg shadow-2xl"/>
-        <div class="max-w-md">
-          <h1 class="text-5xl font-bold">Hello there</h1>
-          <p class="py-6">Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda excepturi exercitationem
-            quasi. In deleniti eaque aut repudiandae et a id nisi.</p>
 
-          <ng-container >
-            <button *ngIf="isLoggedOut$ | async" class="btn btn-primary m-2" routerLink="auth/login">Login</button>
-            <button *ngIf="isLoggedOut$ | async" class="btn btn-primary m-2" routerLink="auth/register">register</button>
-
-            <ng-container *ngIf="isLoggedIn$ | async">
-              <button class="btn btn-primary m-2" (click)="logout()" >logout ({{userEmail$ | async}})</button>
-              <button class="btn btn-primary m-2" routerLink="lessons">Lessons</button>
-              <button *appRbacAllow="['ADMIN']" class="btn btn-primary m-2" routerLink="admin">Admin</button>
-            </ng-container>
-
-          </ng-container>
-
-        </div>
-      </div>
-
+    <div style="z-index: 99" class="relative">
+      <app-sidebar></app-sidebar>
     </div>
-    <router-outlet></router-outlet>
+
+      <div style="z-index: 0" class="relative transition-all" style="width: calc(100vw - {{leftWidth}}px); left: {{leftWidth}}px">
+          <router-outlet></router-outlet>
+      </div>
 
   `,
   styles: []
 })
 export class AppComponent implements OnInit {
+  leftWidth?: number
 
   isLoggedIn$: Observable<boolean> | undefined
   isLoggedOut$: Observable<boolean> | undefined
 
   userEmail$: Observable<string> = this.authService.user$.pipe(map(user => user.email))
 
-  constructor(private authService: AuthService, private router: Router) {
+  constructor(private authService: AuthService, private router: Router, public theme: ThemeService, private sidebar: SidebarService) {
+    this.sidebar.sidebarStatus$.subscribe(val => {
+      this.leftWidth = val == "open" ? 240 : 78
+    })
+
+    this.isLoggedIn$ = this.authService.isLoggedIn$
+    this.isLoggedOut$ = this.authService.isLoggedOut$
+
+    this.theme.presentTheme$.subscribe(theme => {
+      let body = (document.querySelector("body") as any)
+      let html = (document.querySelector("html") as any)
+
+      body.classList = []
+      body.classList.add(theme)
+      html.setAttribute("data-theme", theme)
+    })
   }
 
   ngOnInit(): void {
-    this.isLoggedIn$ = this.authService.isLoggedIn$
-    this.isLoggedOut$ = this.authService.isLoggedOut$
+
+
+
   }
 
 
-  logout() {
-    this.authService.logout().subscribe(() => {
-      this.router.navigateByUrl('/')
-    })
-  }
+
 }

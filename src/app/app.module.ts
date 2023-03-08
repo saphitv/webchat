@@ -9,6 +9,7 @@ import {RbacAllowDirective} from './directives/rbac-allow.directive';
 import {Router} from "@angular/router";
 import {AuthorizationGuard} from "./services/authorization.guard";
 import {SocketIoConfig, SocketIoModule} from "ngx-socket-io";
+import {CoreModule} from "./core/core.module";
 
 const config: SocketIoConfig = {
   url: 'https://localhost:3001', // socket server url;
@@ -20,19 +21,21 @@ const config: SocketIoConfig = {
 @NgModule({
   declarations: [
     AppComponent,
-    RbacAllowDirective
+
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-    SocketIoModule.forRoot(config)
+    SocketIoModule.forRoot(config),
+    CoreModule,
   ],
   providers: [AuthService, {
     provide: 'adminsOnlyGuard',
     useFactory: (authService: AuthService, router: Router) =>
       new AuthorizationGuard(['ADMIN'], authService, router),
-    deps: [AuthService, Router]
+    deps: [AuthService, Router],
+
   }],
   bootstrap: [AppComponent]
 })

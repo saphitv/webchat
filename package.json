@@ -11,7 +11,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "auth_server": "nodemon auth_server/bin/www --watch 'auth_server/**/*.js'",
-    "chat_server": "nodemon chat_server/bin/www --watch 'chat_server/**/*.js'"
+    "chat_server": "nodemon chat_server/app.js --watch 'chat_server/**.js'"
   },
   "private": true,
   "dependencies": {
@@ -36,6 +36,7 @@
     "ngx-socket-io": "^4.4.0",
     "password-validator": "^5.3.0",
     "rxjs": "~7.5.0",
+    "socket.io": "^4.6.1",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"
   },

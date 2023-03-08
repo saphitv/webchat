@@ -21,7 +21,7 @@ async function loginAndBuildResponse(res, credentials, user){
     const sessionToken = await attempLogin(credentials, user)
     setSessionToken(res, sessionToken)
 
-    res.status(200).json({id: user.id, email: user.email, roles: user.roles})
+    res.status(200).json({id: user.id, email: user.email, roles: user.roles, username: user.username})
 
   } catch(err){res.sendStatus(403)}
 }
@@ -44,7 +44,7 @@ async function createUserAndSession(res, credentials){
 
     setSessionToken(res, sessionToken)
 
-    res.status(200).json({id: user.id, email: user.email})
+    res.status(200).json({id: user.id, email: user.email, username: user.username})
   } catch (err){
     console.log("email già registrata", err)
     res.sendStatus(403)

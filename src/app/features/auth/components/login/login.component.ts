@@ -19,8 +19,8 @@ import {Router} from "@angular/router";
 export class LoginComponent implements OnInit {
 
   public form: FormGroup = this.fb.group({
-    email: ['test@angular-university.io', Validators.required],
-    password: ['Test12345', Validators.required],
+    email: ['simonmaggini@gmail.com', Validators.required],
+    password: ['S280575n*', Validators.required],
   })
 
   constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) { }
@@ -35,7 +35,7 @@ export class LoginComponent implements OnInit {
       this.authService.login(val.email, val.password)
         .subscribe(() => {
           console.log("User is logged in")
-          this.router.navigateByUrl('/lessons')
+          this.router.navigateByUrl('/webchat')
         })
     }
   }

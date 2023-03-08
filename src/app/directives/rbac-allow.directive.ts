@@ -9,7 +9,7 @@ import * as _ from "lodash"
 export class RbacAllowDirective implements OnDestroy {
 
 
-  allowedRoles: string[] = []
+  allowedRoles?: string[] = []
   user?: UserInterface
   sub: Subscription;
 
@@ -25,19 +25,29 @@ export class RbacAllowDirective implements OnDestroy {
     }
 
   @Input()
-  set appRbacAllow(allowedRoles: string[]){
-    this.allowedRoles = allowedRoles
+  set appRbacAllow(allowedRoles: string[] | undefined){
+    if(allowedRoles)
+      this.allowedRoles = allowedRoles
 
-    this.showIfUserAllowed()
+    if(this.allowedRoles?.length == 0){
+      //this.viewContainer.createEmbeddedView(this.templateRef)
+    } else {
+      this.showIfUserAllowed()
+    }
+
+
   }
 
   showIfUserAllowed() {
-    if(!this.allowedRoles || this.allowedRoles.length == 0 || !this.user){
+    if(this.allowedRoles?.length == 0){
+      this.viewContainer.createEmbeddedView(this.templateRef)
+      return;
+    } else if (!this.user){
       this.viewContainer.clear()
       return;
     }
 
-    const isUserAllowed = _.intersection(this.allowedRoles, this.user.roles).length > 0
+    const isUserAllowed = _.intersection(this.allowedRoles, this.user?.roles).length > 0
 
     if(isUserAllowed){
       this.viewContainer.createEmbeddedView(this.templateRef)

@@ -18,7 +18,8 @@ class InMemoryDb {
     const user = {
       id,
       email,
-      passwordDigest
+      passwordDigest,
+      roles: ["USER"]
     }
 
     UsersData.push(user)

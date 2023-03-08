@@ -6,6 +6,7 @@ import {HttpClient} from "@angular/common/http";
 export const ANONYMOUS_USER: UserInterface = {
   id: undefined,
   email: '',
+  username: '',
   roles: []
 }
 
@@ -22,7 +23,7 @@ export class AuthService {
   constructor(private http: HttpClient) {
     this.http.get<UserInterface>('/api/user')
       .subscribe(user => {
-        console.log(user)
+        console.log("Utente loggato come", user)
         this.subject.next(user ? user : ANONYMOUS_USER)
       })
   }
