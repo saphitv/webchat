@@ -1,4 +1,4 @@
-export interface navBarItem {
+export interface sidebarItem {
   name: string,
   url?: string,
   path: string,

@@ -1,7 +1,12 @@
 import {Injectable} from '@angular/core';
 import {catchError, filter, map, Observable, of, ReplaySubject, shareReplay, Subject, tap} from "rxjs";
-import {UserInterface} from "../interfaces/user.interface";
+import {UserInterface} from "../../../shared/interfaces/user/user.interface";
 import {HttpClient} from "@angular/common/http";
+import {AuthState} from "../store/reducers/index.reducer";
+import {Store} from "@ngrx/store";
+import {LoginActions} from "../store/actions/actions-type";
+import {RegisterUserInterface} from "../../../shared/interfaces/user/registerUser.interface";
+import {LoginUserInterface} from "../../../shared/interfaces/user/loginUser.interface";
 
 export const ANONYMOUS_USER: UserInterface = {
   id: undefined,
@@ -15,17 +20,37 @@ export const ANONYMOUS_USER: UserInterface = {
 })
 export class AuthService {
 
+  /*loadLocalUser(){
+    this.store.dispatch(LoginActions.loadUser())
+  }
+
+  login(userCredentials: LoginUserInterface){
+    this.store.dispatch(LoginActions.userLoggedIn(userCredentials))
+  }*/
+
+  checkIfJwtValid(): Observable<UserInterface>{
+    return this.http.get<UserInterface>('/api/user')
+  }
+
+  login(user: LoginUserInterface): Observable<UserInterface> {
+    return this.http.post<UserInterface>('/api/auth/login', {email: user.email, password: user.password})
+  }
+
+
+
+
   private subject: Subject<UserInterface> = new ReplaySubject<UserInterface>(1)
   user$: Observable<UserInterface> = this.subject.asObservable().pipe(filter(user => !!user));
   isLoggedIn$: Observable<boolean> = this.user$.pipe(map(user => !!user.id))
   isLoggedOut$: Observable<boolean> = this.isLoggedIn$.pipe(map(isLogged => !isLogged))
 
-  constructor(private http: HttpClient) {
-    this.http.get<UserInterface>('/api/user')
+  constructor(private http: HttpClient, private store: Store<AuthState>) {
+
+    /*this.http.get<UserInterface>('/api/user')
       .subscribe(user => {
         console.log("Utente loggato come", user)
         this.subject.next(user ? user : ANONYMOUS_USER)
-      })
+      })*/
   }
 
   signUp(email: string, password: string): Observable<UserInterface> {
@@ -40,7 +65,7 @@ export class AuthService {
       )
   }
 
-  login(email: string, password: string): Observable<UserInterface> {
+  login1(email: string, password: string): Observable<UserInterface> {
     return this.http.post<UserInterface>('/api/auth/login', {email, password})
       .pipe(
         shareReplay(),

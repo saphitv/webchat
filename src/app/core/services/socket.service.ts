@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import {Socket} from "ngx-socket-io";
 import {BehaviorSubject, Observable} from "rxjs";
-import {pullAll} from "lodash";
 
 @Injectable({
   providedIn: 'root'

@@ -1,6 +1,6 @@
 import {Directive, Input, OnDestroy, TemplateRef, ViewContainerRef} from '@angular/core';
-import {AuthService} from "../services/auth.service";
-import {UserInterface} from "../interfaces/user.interface";
+import {AuthService} from "../../features/auth/services/auth.service";
+import {UserInterface} from "../interfaces/user/user.interface";
 import {Subscription} from "rxjs";
 import * as _ from "lodash"
 @Directive({

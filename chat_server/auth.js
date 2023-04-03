@@ -31,8 +31,13 @@ const retrieveUserIdFromRequest = (jwt, socket, next) => {
 
 module.exports = (socket, next) => {
   const jwt = socket.request.headers.cookie.match("(^| )SESSIONID([^;]+)")[0].replace("SESSIONID=", "")
+
   if(jwt)
     retrieveUserIdFromRequest(jwt, socket, next)
-  else
+  else {
+    socket.close()
     next(new Error("JWT non esistente o scaduto", { }))
+  }
+
+
 }

@@ -10,10 +10,10 @@ router.get('/', (req, res) => {
     if(user){
       res.status(200).json({id: user.id, email: user.email, roles: user.roles, username: user.username})
     } else {
-      res.sendStatus(204)
+      res.sendStatus(404)
     }
   } else {
-    res.sendStatus(204)
+    res.sendStatus(404)
   }
 
 

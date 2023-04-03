@@ -3,19 +3,15 @@ const https = require('https');
 const {PRIVATE_KEY, PUBLIC_KEY} = require("../auth_server/data/security.utils");
 const {Server} = require('socket.io')
 const sessionTokenMiddleware = require("./auth");
+const {onDisconnect} = require("./defaultEvent");
+const {partial} = require("lodash");
 
 var options = {
   key: PRIVATE_KEY, cert: PUBLIC_KEY
 };
 
 var port = normalizePort(process.env.PORT || '3001');
-
 var server = https.createServer(options);
-
-/**
- * Listen on provided port, on all network interfaces.
- */
-
 
 const io = new Server(server, {cors: {origin: "https://localhost:4200"}})
 
@@ -28,18 +24,20 @@ io.on("connection", (socket) => {
   for (let [id, socket] of io.of("/").sockets) {
     users.push({
       socketId: id,
-      userId: socket.user.id,
+      id: socket.user.id,
       username: socket.user.username,
     });
   }
 
   // console.log("new user emit", users)
-  socket.emit("users", users);
+  socket.emit("users_init", users);
+
+  console.log("user connected", socket.user.username)
 
   socket.broadcast.emit("user connected",{
     socketId: socket.id,
-    userId: socket.user.id,
-    username: socket.user.username
+    id: socket.user.id,
+    username: socket.user.username,
   })
 
   socket.on("private message", (mes) => {
@@ -47,6 +45,8 @@ io.on("connection", (socket) => {
       ...mes
     })
   })
+
+  socket.on("disconnect", partial(onDisconnect, users, socket))
 });
 
 io.on("close", (socket) => {

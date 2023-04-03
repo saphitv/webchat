@@ -1,7 +1,7 @@
 import {Inject, Injectable} from '@angular/core';
 import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot, UrlTree} from '@angular/router';
 import {map, Observable, first, tap} from 'rxjs';
-import {AuthService} from "./auth.service";
+import {AuthService} from "../../features/auth/services/auth.service";
 import * as _ from "lodash"
 
 @Inject({})

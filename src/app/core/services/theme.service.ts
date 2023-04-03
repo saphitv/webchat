@@ -1,25 +1,28 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject} from "rxjs";
+import {CoreState} from "../store/reducers/index.reducers";
+import {Store} from "@ngrx/store";
+import {CoreActions} from "../store/actions/actions-type";
+import {CoreSelectors} from "../store/selectors/selectors-type";
 
 @Injectable({
   providedIn: 'root'
 })
 export class ThemeService  {
 
-  constructor() {
-    const savedTheme = localStorage.getItem('theme');
+  constructor(private store: Store<CoreState>) {
+    const savedTheme = localStorage.getItem('theme') as 'light' | 'dark';
     if (savedTheme) {
-      this.presentTheme$.next(savedTheme);
+      this.store.dispatch(CoreActions.setTheme({theme: savedTheme}))
     }
   }
 
-  isDarkEnable = true;
-  presentTheme$ = new BehaviorSubject<string>('light');
   changeTheme() {
-    this.presentTheme$.value === 'light'
-      ? this.presentTheme$.next('dark')
-      : this.presentTheme$.next('light');
-    localStorage.setItem('theme', this.presentTheme$.value);
-    this.isDarkEnable = !this.isDarkEnable;
+    this.store.dispatch(CoreActions.toogleTheme());
+
+    this.store.select(CoreSelectors.selectTheme).subscribe(theme => {
+      localStorage.setItem('theme', theme);
+    }).unsubscribe()
+
   }
 }

@@ -1,7 +1,11 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {AuthService} from "../../../../services/auth.service";
 import {Router} from "@angular/router";
+import {AuthState} from "../../store/reducers/index.reducer";
+import {Store} from "@ngrx/store";
+import {LoginActions} from "../../store/actions/actions-type";
+import {Observable, Subscription} from "rxjs";
+import {AuthSelectors} from "../../store/selectors/selectors-type";
 
 @Component({
   selector: 'app-login',
@@ -16,28 +20,35 @@ import {Router} from "@angular/router";
   styles: [
   ]
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit, OnDestroy {
+
+  isLoggedIn$: Observable<boolean> = this.store.select(AuthSelectors.isLoggedIn)
+
+  subs: Subscription[] = []
 
   public form: FormGroup = this.fb.group({
     email: ['simonmaggini@gmail.com', Validators.required],
     password: ['S280575n*', Validators.required],
   })
 
-  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) { }
+  constructor(private fb: FormBuilder, private store: Store<AuthState>, private router: Router) { }
 
   ngOnInit(): void {
+    this.isLoggedIn$.subscribe(isLoggedIn => {
+      if(isLoggedIn)
+        this.router.navigateByUrl('webchat')
+    })
+  }
+
+  ngOnDestroy() {
+    this.subs.forEach(sub => sub.unsubscribe())
   }
 
   login(){
     const val = this.form.value;
 
-    if(val.email && val.password){
-      this.authService.login(val.email, val.password)
-        .subscribe(() => {
-          console.log("User is logged in")
-          this.router.navigateByUrl('/webchat')
-        })
-    }
+    if(val.email && val.password)
+      this.store.dispatch(LoginActions.userLoggedIn({user: {email: val.email, password: val.password}}))
   }
 
 }

@@ -1,14 +1,19 @@
 import { Injectable } from '@angular/core';
-import {BehaviorSubject, combineLatest, filter, map, Observable, Subject} from "rxjs";
-import {SocketService} from "../../../services/socket.service";
-import {AuthService} from "../../../services/auth.service";
+import {BehaviorSubject, combineLatest, filter, map, Observable, Subject, tap} from "rxjs";
+import {SocketService} from "../../../core/services/socket.service";
+import {AuthService} from "../../auth/services/auth.service";
+import {AppState} from "../../../store/reducers/index.reducer";
+import {Store} from "@ngrx/store";
+import {AuthSelectors} from "../../auth/store/selectors/selectors-type";
+import {WebchatActions} from "../store/actions/actions-type";
+import {UserInterface} from "../interfaces/user.interface";
 
 @Injectable({
   providedIn: 'root'
 })
 export class WebchatService {
 
-  userToChatWith: BehaviorSubject<string> = new BehaviorSubject<string>('')
+  /*userToChatWith: BehaviorSubject<string> = new BehaviorSubject<string>('')
 
   userChats: BehaviorSubject<{name: string}[]> = new BehaviorSubject<{name: string}[]>([{name: "test1"}, {name: "test2"}, {name: "test3"}])
 
@@ -20,40 +25,48 @@ export class WebchatService {
         {chatId: 3, to: "test", from: "test2", type: "message", cnt: "Hello"}
     ])
 
-  users$: BehaviorSubject<any> = new BehaviorSubject<any>([])
+  users$: BehaviorSubject<any> = new BehaviorSubject<any>([])*/
 
-  constructor(private socket: SocketService, private auth: AuthService) {
+  constructor(private socket: SocketService, private auth: AuthService, private store: Store<AppState>) {
     this.socket.connectToSocket()
+    console.log("test")
 
     // init user
-     combineLatest([this.socket.fromEvent<any>("users"), this.auth.user$])
+    const ref = combineLatest([this.socket.fromEvent<UserInterface[]>("users_init"), this.store.select(AuthSelectors.selectUserState)])
       .pipe(
         map(([users, currentUser]) => {
-          return users.map((user: any) => ({self: user.userId == currentUser.id, ...user}))
+          return users.map((user: any) => ({self: user.id == currentUser.id, ...user})) as UserInterface[]
         })
-      ).subscribe(users => this.users$.next(users))
+      ).subscribe(users => {
+        this.store.dispatch(WebchatActions.setUsers(users))
+        ref.unsubscribe()
+      })
 
     // user connected
-    this.socket.fromEvent("user connected").subscribe(newUser => {
-      console.log(this.users$.value)
-      this.users$.next([newUser, ...this.users$.value])
+    this.socket.fromEvent<UserInterface>("user connected").subscribe(newUser => {
+      // @ts-ignore
+      this.store.dispatch(WebchatActions.connectUser({self: false, ...newUser}))
     })
 
     // incoming messages
-    this.socket.fromEvent('private message').subscribe((mes: any) => {
+    /*this.socket.fromEvent('private message').subscribe((mes: any) => {
       let m = this.messages.value
-      console.log("message", mes)
+      //console.log("message", mes)
 
       this.messages.next([...m, {to: mes.to, cnt: mes.cnt, type: mes.type, from: "test"}])
+    })*/
+
+    this.socket.fromEvent("user disconnected").subscribe((user: any) => {
+      this.store.dispatch(WebchatActions.disconnectUser(user.id))
     })
   }
 
   getMessageFromChat(userChat: string) {
-    return this.messages.pipe(map(mes => mes.filter(m => m.from == userChat || m.to == userChat)))
+    //return this.messages.pipe(map(mes => mes.filter(m => m.from == userChat || m.to == userChat)))
   }
 
   sendMessageTo(type: string, cnt: string, to: string){
-    let mes = this.messages.value
+    /*let mes = this.messages.value
     let userToChatWith = this.users$.value.filter((user: any) => user.username == this.userToChatWith.value)[0]
 
     this.messages.next([...mes, {to, cnt, type, from: "saphitv"}])
@@ -65,7 +78,7 @@ export class WebchatService {
       type: "message",
       cnt: cnt,
       from: "saphitv"
-    })
+    })*/
 
   }
 }

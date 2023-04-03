@@ -6,6 +6,10 @@ import { ChatListComponent } from './components/chat-list/chat-list.component';
 import { ChatBodyComponent } from './components/chat-body/chat-body.component';
 import { InputbarComponent } from './components/inputbar/inputbar.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
+import {StoreModule} from "@ngrx/store";
+import {WebchatReducer} from "./store/reducers/index.reducer";
+import {EffectsModule} from "@ngrx/effects";
+import {WebchatEffect} from "./store/effects/webchat.effect";
 
 
 
@@ -19,7 +23,9 @@ import { NavbarComponent } from './components/navbar/navbar.component';
   ],
   imports: [
     CommonModule,
-    WebchatRoutingModule
+    WebchatRoutingModule,
+    StoreModule.forFeature('webchat', WebchatReducer),
+    EffectsModule.forFeature([WebchatEffect])
   ]
 })
 export class WebchatModule { }

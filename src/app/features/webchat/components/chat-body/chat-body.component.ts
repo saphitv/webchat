@@ -1,7 +1,11 @@
 import {ChangeDetectionStrategy, Component, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
-import {BehaviorSubject, ReplaySubject, Subject, Subscription} from 'rxjs';
+import {BehaviorSubject, combineLatest, ReplaySubject, Subject, Subscription} from 'rxjs';
 import {WebchatService} from "../../services/webchat.service";
+import {Store} from "@ngrx/store";
+import {WebchatState} from "../../store/reducers/index.reducer";
+import {WebchatSelectors} from "../../store/selectors/selectors-type";
+import {WebchatActions} from "../../store/actions/actions-type";
 
 @Component({
   selector: 'app-chat-body',
@@ -46,13 +50,15 @@ export class ChatBodyComponent implements OnInit {
   messages: ReplaySubject<any> = new ReplaySubject<any>(1)
 
 
-  constructor(private activatedRoute: ActivatedRoute, private webchat: WebchatService) {
-    this.activatedRoute.params.subscribe(params => {
-      if(this.userToChatWith)
-        this.userToChatWith.next(params["user"])
-      else
-        this.userToChatWith = new BehaviorSubject(params["user"])
-    })
+  constructor(private activatedRoute: ActivatedRoute, private store: Store<WebchatState>) {
+    combineLatest([this.activatedRoute.params, this.store.select(WebchatSelectors.selectCurrentChat)]).subscribe(([params, currentChat]) => {
+      if(!currentChat || params["user"] != currentChat.username){
+        this.store.select(WebchatSelectors.selectUserByName, {name: params["user"]}).subscribe(user => {
+          if(user)
+            this.store.dispatch(WebchatActions.setCurrentChat(user))
+        }).unsubscribe()
+      }
+    }).unsubscribe()
 
     let subs: Subscription[] = []
 
@@ -60,17 +66,17 @@ export class ChatBodyComponent implements OnInit {
       if(subs.length > 0)
         subs.forEach(sub => sub.unsubscribe())
 
-      subs.push(this.webchat.getMessageFromChat(user).subscribe(mes => {
+     /* subs.push(this.webchat.getMessageFromChat(user).subscribe(mes => {
         this.messages.next(mes)
-      }))
+      }))*/
 
     })
   }
 
   ngOnInit(): void {
-    this.userToChatWith?.subscribe(username => {
+    /*this.userToChatWith?.subscribe(username => {
       this.webchat.userToChatWith.next(username)
-    })
+    })*/
   }
 
 
