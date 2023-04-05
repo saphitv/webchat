@@ -10,5 +10,7 @@ export const selectCurrentChat = createSelector(featureSelector, (state: Webchat
 
 export const selectUserById = createSelector(selectUsers, (users: UserInterface[], props: { id: number}) => users.find(u => u.id == props.id));
 
-export const selectUserByName = createSelector(selectUsers, (users: UserInterface[], props: { name: string}) => users.find(u => u.username == props.name))
+export const selectUserByName = (props: { name: string}) =>
+  createSelector(selectUsers, (users: UserInterface[]) =>
+    users.find(u => u.username == props.name))
 
