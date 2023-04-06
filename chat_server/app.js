@@ -20,6 +20,8 @@ io.use(sessionTokenMiddleware);
 io.on("connection", (socket) => {
   //console.log("user connected", socket.user.username)
 
+  if(!socket.user) socket.disconnect(true)
+
   const users = [];
   for (let [id, socket] of io.of("/").sockets) {
     users.push({
