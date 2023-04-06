@@ -52,7 +52,6 @@ export class WebchatService {
 
   connect() {
     this.socket.connectToSocket()
-    console.log("test")
 
     // init user
     const ref = combineLatest([this.socket.fromEvent<UserInterface[]>("users_init"), this.store.select(AuthSelectors.selectUserState)])

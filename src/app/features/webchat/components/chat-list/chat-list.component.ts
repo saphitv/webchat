@@ -13,7 +13,7 @@ import {WebchatActions} from "../../store/actions/actions-type";
     <div class="w-full h-screen">
         <li class="list-none bg-red-100 w-full h-12 p-4 flex item-center my-2 cursor-pointer"
             *ngFor="let user of (users$ | async)"
-            (click)="navigateChat(user)"
+            (click)="navigateChat(user.username)"
         >{{user.username}} {{user.self ? '(yourself)' : ''}}</li>
     </div>
   `,

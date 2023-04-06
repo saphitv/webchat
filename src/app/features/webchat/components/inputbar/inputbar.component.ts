@@ -1,5 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {WebchatService} from "../../services/webchat.service";
+import {UserInterface} from "../../interfaces/user.interface";
 
 @Component({
   selector: 'app-inputbar',
@@ -19,7 +20,7 @@ import {WebchatService} from "../../services/webchat.service";
   ]
 })
 export class InputbarComponent implements OnInit {
-  @Input() chatWithUser: string = ""
+  @Input() chatWithUser!: UserInterface
 
   constructor(private webchat: WebchatService) { }
 
@@ -27,7 +28,7 @@ export class InputbarComponent implements OnInit {
   }
 
   sendMessage(inputValue: HTMLInputElement){
-    this.webchat.sendMessageTo('message', inputValue.value, this.chatWithUser)
+    this.webchat.sendMessageTo('message', inputValue.value, this.chatWithUser.username)
     inputValue.value = ''
   }
 

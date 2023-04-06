@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {WebchatService} from "./services/webchat.service";
-import {combineLatest} from "rxjs";
+import {combineLatest, concatMap, filter, tap} from "rxjs";
 import {WebchatSelectors} from "./store/selectors/selectors-type";
 import {WebchatActions} from "./store/actions/actions-type";
 import {WebchatState} from "./store/reducers/index.reducer";
@@ -26,18 +26,21 @@ import {UserInterface} from "./interfaces/user.interface";
 export class WebchatComponent implements OnInit {
 
   constructor(private webchat: WebchatService, private activatedRoute: ActivatedRoute, private store: Store<WebchatState>){
-    combineLatest([this.activatedRoute.params, this.store.select(WebchatSelectors.selectCurrentChat)]).subscribe(([params, currentChat]) => {
-      if(!currentChat || params["user"] != currentChat.username){
-        this.store.select(WebchatSelectors.selectUserByName({name: params["user"]})).subscribe(user => {
-          if(user)
-            this.store.dispatch(WebchatActions.setCurrentChat(user))
-        }).unsubscribe()
-      }
-    }).unsubscribe()
-
-    this.activatedRoute.params.subscribe(params => {
-      console.log(params)
-    })
+    combineLatest([this.activatedRoute.params, this.store.select(WebchatSelectors.selectCurrentChat)])
+      .pipe(
+        filter(([params, currentChat]) => {
+          return !currentChat || params["user"] != currentChat.username
+        }),
+        tap(([params, currentChat]) => console.log(params, currentChat)),
+        concatMap(([params, currentChat]) => {
+          return this.store.select(WebchatSelectors.selectUserByName({name: params["user"]}))
+        }),
+        tap(user => {
+          console.log(user)
+          this.store.dispatch(WebchatActions.setCurrentChat(user as any))
+        })
+      )
+      .subscribe().unsubscribe()
   }
 
   ngOnInit(): void {

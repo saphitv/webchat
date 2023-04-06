@@ -10,9 +10,9 @@ import {WebchatActions} from "../../store/actions/actions-type";
 @Component({
   selector: 'app-chat-body',
   template: `
-    <ng-container *ngIf="userToChatWith?.asObservable() | async as userToChatWith">
+    <ng-container *ngIf="userToChatWith | async as userToChatWith">
       <app-navbar>
-        {{ userToChatWith }}
+        {{ userToChatWith.username }}
       </app-navbar>
       <div class="w-full h-full" style="height: calc(100vh - 4rem - 4rem)">
         <ng-container *ngFor="let mes of messages | async">
@@ -46,7 +46,7 @@ import {WebchatActions} from "../../store/actions/actions-type";
 })
 export class ChatBodyComponent implements OnInit {
 
-  userToChatWith?: BehaviorSubject<string>
+  userToChatWith = this.store.select(WebchatSelectors.selectCurrentChat)
   messages: ReplaySubject<any> = new ReplaySubject<any>(1)
 
 
