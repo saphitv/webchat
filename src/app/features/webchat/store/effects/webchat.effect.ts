@@ -10,7 +10,7 @@ export class WebchatEffect {
     () =>
       this.actions$.pipe(
         ofType(WebchatActions.setCurrentChat),
-        concatMap((action) => this.router.navigateByUrl('webchat/' + action.user.username)),
+        tap((action) => this.router.navigateByUrl('webchat/' + action.user.username)),
         catchError(_ => {
           console.log("Errore nel routing verso la chat")
           return of()
