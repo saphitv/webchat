@@ -51,14 +51,7 @@ export class ChatBodyComponent implements OnInit {
 
 
   constructor(private activatedRoute: ActivatedRoute, private store: Store<WebchatState>) {
-    combineLatest([this.activatedRoute.params, this.store.select(WebchatSelectors.selectCurrentChat)]).subscribe(([params, currentChat]) => {
-      if(!currentChat || params["user"] != currentChat.username){
-        this.store.select(WebchatSelectors.selectUserByName, {name: params["user"]}).subscribe(user => {
-          if(user)
-            this.store.dispatch(WebchatActions.setCurrentChat(user))
-        }).unsubscribe()
-      }
-    }).unsubscribe()
+
 
     let subs: Subscription[] = []
 

@@ -27,7 +27,30 @@ export class WebchatService {
 
   users$: BehaviorSubject<any> = new BehaviorSubject<any>([])*/
 
-  constructor(private socket: SocketService, private auth: AuthService, private store: Store<AppState>) {
+  constructor(private socket: SocketService, private auth: AuthService, private store: Store<AppState>) {}
+
+  getMessageFromChat(userChat: string) {
+    //return this.messages.pipe(map(mes => mes.filter(m => m.from == userChat || m.to == userChat)))
+  }
+
+  sendMessageTo(type: string, cnt: string, to: string){
+    /*let mes = this.messages.value
+    let userToChatWith = this.users$.value.filter((user: any) => user.username == this.userToChatWith.value)[0]
+
+    this.messages.next([...mes, {to, cnt, type, from: "saphitv"}])
+
+    this.socket.emit("private message", {
+      chatId: 0,
+      toSocket: userToChatWith.socketId,
+      to: this.userToChatWith.value,
+      type: "message",
+      cnt: cnt,
+      from: "saphitv"
+    })*/
+
+  }
+
+  connect() {
     this.socket.connectToSocket()
     console.log("test")
 
@@ -59,26 +82,5 @@ export class WebchatService {
     this.socket.fromEvent("user disconnected").subscribe((user: any) => {
       this.store.dispatch(WebchatActions.disconnectUser(user.id))
     })
-  }
-
-  getMessageFromChat(userChat: string) {
-    //return this.messages.pipe(map(mes => mes.filter(m => m.from == userChat || m.to == userChat)))
-  }
-
-  sendMessageTo(type: string, cnt: string, to: string){
-    /*let mes = this.messages.value
-    let userToChatWith = this.users$.value.filter((user: any) => user.username == this.userToChatWith.value)[0]
-
-    this.messages.next([...mes, {to, cnt, type, from: "saphitv"}])
-
-    this.socket.emit("private message", {
-      chatId: 0,
-      toSocket: userToChatWith.socketId,
-      to: this.userToChatWith.value,
-      type: "message",
-      cnt: cnt,
-      from: "saphitv"
-    })*/
-
   }
 }

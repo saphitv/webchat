@@ -15,8 +15,10 @@ export class IsLoggedInGuard implements CanActivate {
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
     return this.store.select(AuthSelectors.isLoggedIn).pipe(
       tap((isLoggedIn: boolean) => {
-        if(!isLoggedIn)
-          this.router.navigateByUrl('')
+        if(!isLoggedIn) {
+          this.router.navigateByUrl('/')
+        }
+
       })
     )
   }
