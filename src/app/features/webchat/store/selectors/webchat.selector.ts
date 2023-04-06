@@ -17,3 +17,4 @@ export const selectUserByName = (props: { name: string}) =>
     return users.find(u => u.username == props.name)
   })
 
+export const areUsersLoaded = createSelector(featureSelector, (state: WebchatState) => state.usersLoaded);

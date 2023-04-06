@@ -31,3 +31,8 @@ export const receiveMessage = createAction(
   '[Webchat] Receive Message',
   (message: MessageInterface) => ({message})
 );
+
+export const loadedUsers = createAction(
+  '[Webchat] Loading Users',
+  (loading: boolean) => ({loading})
+);

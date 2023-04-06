@@ -6,12 +6,15 @@ import {WebchatActions} from "../actions/actions-type";
 export interface WebchatState {
   users: UserInterface[],
   currentChat: UserInterface | null,
-  messages: { [chatId: number]: MessageInterface[] }
+  messages: { [chatId: number]: MessageInterface[] },
+
+  usersLoaded: boolean,
 }
 export const initialCoreState: WebchatState = {
   users: [],
   currentChat: null,
-  messages: {}
+  messages: {},
+  usersLoaded: false,
 };
 
 
@@ -21,5 +24,6 @@ export const WebchatReducer: ActionReducer<WebchatState> = createReducer(
   on(WebchatActions.disconnectUser, (state, {userId}) => ({...state, users: state.users.filter(u => u.id != userId)})),
   on(WebchatActions.connectUser, (state, {user}) => ({...state, users: [user, ...state.users]})),
   on(WebchatActions.setCurrentChat, (state, {user}) => ({...state, currentChat: user})),
+  on(WebchatActions.loadedUsers, (state, {loading}) => ({...state, usersLoading: loading})),
 );
 
