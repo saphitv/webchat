@@ -33,6 +33,6 @@ export const receiveMessage = createAction(
 );
 
 export const loadedUsers = createAction(
-  '[Webchat] Loading Users',
+  '[Webchat] User Loaded',
   (loading: boolean) => ({loading})
 );

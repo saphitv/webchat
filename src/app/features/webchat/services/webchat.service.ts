@@ -61,6 +61,7 @@ export class WebchatService {
         })
       ).subscribe(users => {
         this.store.dispatch(WebchatActions.setUsers(users))
+        this.store.dispatch(WebchatActions.loadedUsers(true))
         ref.unsubscribe()
       })
 

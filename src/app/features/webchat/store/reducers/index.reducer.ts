@@ -24,6 +24,6 @@ export const WebchatReducer: ActionReducer<WebchatState> = createReducer(
   on(WebchatActions.disconnectUser, (state, {userId}) => ({...state, users: state.users.filter(u => u.id != userId)})),
   on(WebchatActions.connectUser, (state, {user}) => ({...state, users: [user, ...state.users]})),
   on(WebchatActions.setCurrentChat, (state, {user}) => ({...state, currentChat: user})),
-  on(WebchatActions.loadedUsers, (state, {loading}) => ({...state, usersLoading: loading})),
+  on(WebchatActions.loadedUsers, (state, {loading}) => ({...state, usersLoaded: loading})),
 );
 

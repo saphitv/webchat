@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, inject, OnInit} from '@angular/core';
 import {WebchatService} from "./services/webchat.service";
 import {combineLatest, concatMap, filter, tap} from "rxjs";
 import {WebchatSelectors} from "./store/selectors/selectors-type";
 import {WebchatActions} from "./store/actions/actions-type";
 import {WebchatState} from "./store/reducers/index.reducer";
 import {Store} from "@ngrx/store";
-import {ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {UserInterface} from "./interfaces/user.interface";
 
 @Component({
@@ -25,22 +25,35 @@ import {UserInterface} from "./interfaces/user.interface";
 })
 export class WebchatComponent implements OnInit {
 
+  router = inject(Router)
+
   constructor(private webchat: WebchatService, private activatedRoute: ActivatedRoute, private store: Store<WebchatState>){
-    combineLatest([this.activatedRoute.params, this.store.select(WebchatSelectors.selectCurrentChat)])
+    const ref = combineLatest([
+      this.activatedRoute.params,
+      this.store.select(WebchatSelectors.selectCurrentChat),
+      this.store.select(WebchatSelectors.areUsersLoaded)
+    ])
       .pipe(
-        filter(([params, currentChat]) => {
-          return !currentChat || params["user"] != currentChat.username
+        /* tap(([params, currentChat, areUsersLoaded]) => console.log(params, currentChat, areUsersLoaded)), */
+        filter(([params, currentChat, areUsersLoaded]) => {
+          return areUsersLoaded && (!currentChat || params["user"] != currentChat.username)
         }),
-        tap(([params, currentChat]) => console.log(params, currentChat)),
-        concatMap(([params, currentChat]) => {
+        concatMap(([params, _, areUsersLoaded]) => {
           return this.store.select(WebchatSelectors.selectUserByName({name: params["user"]}))
         }),
         tap(user => {
-          console.log(user)
-          this.store.dispatch(WebchatActions.setCurrentChat(user as any))
+          if(user) {
+            this.store.dispatch(WebchatActions.setCurrentChat(user))
+            ref.unsubscribe()
+
+          }
+          else
+            this.router.navigateByUrl("/webchat")
+
+
         })
       )
-      .subscribe().unsubscribe()
+      .subscribe()
   }
 
   ngOnInit(): void {
