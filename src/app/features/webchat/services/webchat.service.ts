@@ -5,7 +5,7 @@ import {AuthService} from "../../auth/services/auth.service";
 import {AppState} from "../../../store/reducers/index.reducer";
 import {Store} from "@ngrx/store";
 import {AuthSelectors} from "../../auth/store/selectors/selectors-type";
-import {WebchatActions} from "../store/actions/actions-type";
+import { WebchatActionsUser } from "../store/actions/actions-type";
 import {UserInterface} from "../interfaces/user.interface";
 
 @Injectable({
@@ -60,8 +60,8 @@ export class WebchatService {
           return users.map((user: any) => ({self: user.id == currentUser.id, ...user})) as UserInterface[]
         })
       ).subscribe(users => {
-        this.store.dispatch(WebchatActions.setUsers(users))
-        this.store.dispatch(WebchatActions.loadedUsers(true))
+        this.store.dispatch(WebchatActionsUser.setUsers(users))
+        this.store.dispatch(WebchatActionsUser.loadedUsers(true))
         ref.unsubscribe()
       })
 
@@ -80,7 +80,7 @@ export class WebchatService {
     })*/
 
     this.socket.fromEvent("user disconnected").subscribe((user: any) => {
-      this.store.dispatch(WebchatActions.disconnectUser(user.id))
+      this.store.dispatch(WebchatActionsUser.disconnectUser(user.id))
     })
   }
 }

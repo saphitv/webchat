@@ -1,3 +1,4 @@
-import * as WebchatActions from './webchat.action';
+import * as WebchatActionsUser from './user.action';
+import * as WebchatActionsMessage from './message.action';
 
-export { WebchatActions }
+export { WebchatActionsUser, WebchatActionsMessage }

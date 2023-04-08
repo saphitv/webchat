@@ -1,7 +1,7 @@
 import {ActionReducer, createReducer, on} from '@ngrx/store';
 import {UserInterface} from "../../interfaces/user.interface";
 import {MessageInterface} from "../../interfaces/message.interface";
-import {WebchatActions} from "../actions/actions-type";
+import { WebchatActionsUser } from "../actions/actions-type";
 
 export interface WebchatState {
   users: UserInterface[],
@@ -20,10 +20,10 @@ export const initialCoreState: WebchatState = {
 
 export const WebchatReducer: ActionReducer<WebchatState> = createReducer(
   initialCoreState,
-  on(WebchatActions.setUsers, (state, {users}) => ({...state, users})),
-  on(WebchatActions.disconnectUser, (state, {userId}) => ({...state, users: state.users.filter(u => u.id != userId)})),
-  on(WebchatActions.connectUser, (state, {user}) => ({...state, users: [user, ...state.users]})),
-  on(WebchatActions.setCurrentChat, (state, {user}) => ({...state, currentChat: user})),
-  on(WebchatActions.loadedUsers, (state, {loading}) => ({...state, usersLoaded: loading})),
+  on(WebchatActionsUser.setUsers, (state, {users}) => ({...state, users})),
+  on(WebchatActionsUser.disconnectUser, (state, {userId}) => ({...state, users: state.users.filter(u => u.id != userId)})),
+  on(WebchatActionsUser.connectUser, (state, {user}) => ({...state, users: [user, ...state.users]})),
+  on(WebchatActionsUser.setCurrentChat, (state, {user}) => ({...state, currentChat: user})),
+  on(WebchatActionsUser.loadedUsers, (state, {loading}) => ({...state, usersLoaded: loading})),
 );
 

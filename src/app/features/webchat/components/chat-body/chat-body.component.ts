@@ -1,11 +1,9 @@
-import {ChangeDetectionStrategy, Component, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit, SimpleChanges} from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
-import {BehaviorSubject, combineLatest, ReplaySubject, Subject, Subscription} from 'rxjs';
-import {WebchatService} from "../../services/webchat.service";
+import { ReplaySubject, Subscription} from 'rxjs';
 import {Store} from "@ngrx/store";
 import {WebchatState} from "../../store/reducers/index.reducer";
 import {WebchatSelectors} from "../../store/selectors/selectors-type";
-import {WebchatActions} from "../../store/actions/actions-type";
 
 @Component({
   selector: 'app-chat-body',

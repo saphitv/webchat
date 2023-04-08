@@ -5,7 +5,7 @@ import {Router} from "@angular/router";
 import {UserInterface} from "../../interfaces/user.interface";
 import {WebchatSelectors} from "../../store/selectors/selectors-type";
 import {Store} from "@ngrx/store";
-import {WebchatActions} from "../../store/actions/actions-type";
+import { WebchatActionsUser } from "../../store/actions/actions-type";
 import {WebchatState} from "../../store/reducers/index.reducer";
 
 @Component({
@@ -28,6 +28,6 @@ export class ChatListComponent {
   users$: Observable<UserInterface[]> = this.store.select(WebchatSelectors.selectUsers)
 
   navigateChat(user: UserInterface){
-    this.store.dispatch(WebchatActions.setCurrentChat(user))
+    this.store.dispatch(WebchatActionsUser.setCurrentChat(user))
   }
 }
