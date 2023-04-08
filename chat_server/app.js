@@ -20,7 +20,12 @@ io.use(sessionTokenMiddleware);
 io.on("connection", (socket) => {
   //console.log("user connected", socket.user.username)
 
-  if(!socket.user) socket.disconnect(true)
+
+  if(!socket.user) {
+    console.log("user not authenticated")
+    socket.disconnect()
+    return
+  }
 
   const users = [];
   for (let [id, socket] of io.of("/").sockets) {
@@ -33,6 +38,7 @@ io.on("connection", (socket) => {
 
   // console.log("new user emit", users)
   socket.emit("users_init", users);
+
 
   console.log("user connected", socket.user.username)
 

@@ -23,7 +23,7 @@ const retrieveUserIdFromRequest = (jwt, socket, next) => {
         next()
       })
       .catch(err => {
-        console.log(err)
+        console.log(err.message)
         next()
       })
 
