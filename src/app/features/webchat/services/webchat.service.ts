@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {BehaviorSubject, combineLatest, filter, map, Observable, Subject, tap} from "rxjs";
+import {BehaviorSubject, combineLatest, filter, map, Observable, of, Subject, tap} from "rxjs";
 import {SocketService} from "../../../core/services/socket.service";
 import {AuthService} from "../../auth/services/auth.service";
 import {AppState} from "../../../store/reducers/index.reducer";
@@ -7,6 +7,8 @@ import {Store} from "@ngrx/store";
 import {AuthSelectors} from "../../auth/store/selectors/selectors-type";
 import { WebchatActionsUser } from "../store/actions/actions-type";
 import {UserInterface} from "../interfaces/user.interface";
+import {MessageInterface} from "../interfaces/message.interface";
+import {WebchatSelectors} from "../store/selectors/selectors-type";
 
 @Injectable({
   providedIn: 'root'
@@ -68,7 +70,7 @@ export class WebchatService {
     // user connected
     this.socket.fromEvent<UserInterface>("user connected").subscribe(newUser => {
       // @ts-ignore
-      this.store.dispatch(WebchatActions.connectUser({self: false, ...newUser}))
+      this.store.dispatch(WebchatActionsUser.connectUser({self: false, ...newUser}))
     })
 
     // incoming messages
@@ -82,5 +84,16 @@ export class WebchatService {
     this.socket.fromEvent("user disconnected").subscribe((user: any) => {
       this.store.dispatch(WebchatActionsUser.disconnectUser(user.id))
     })
+  }
+
+
+  sendMessage(mes: MessageInterface) {
+    if (!mes.from.self) {
+      throw new Error("You can't send messages from other users")
+    }
+
+    this.socket.emit("private message", {mes})
+
+    return of(mes)
   }
 }

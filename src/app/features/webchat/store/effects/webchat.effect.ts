@@ -1,11 +1,18 @@
-import { Injectable } from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import {catchError, of, tap} from 'rxjs';
+import {catchError, concatMap, map, Observable, of, tap} from 'rxjs';
 import {Router} from "@angular/router";
-import { WebchatActionsUser } from "../actions/actions-type";
+import {WebchatActionsMessage, WebchatActionsUser} from "../actions/actions-type";
+import {WebchatService} from "../../services/webchat.service";
+import {MessageInterface} from "../../interfaces/message.interface";
+import {combineLatest} from "rxjs/internal/operators/combineLatest";
 
 @Injectable()
 export class WebchatEffect {
+  actions$ = inject(Actions)
+  router = inject(Router)
+  webchatService = inject(WebchatService)
+
   setCurrentChat$ = createEffect(
     () =>
       this.actions$.pipe(
@@ -19,5 +26,21 @@ export class WebchatEffect {
     { dispatch: false }
   );
 
-  constructor(private actions$: Actions, private router: Router) {}
+  sendMessage$ = createEffect(
+    () => {
+      return this.actions$.pipe(
+        ofType(WebchatActionsMessage.sendMessage),
+        tap((action) => console.log("Invio messaggio: ", action.message)),
+        concatMap((action) => this.webchatService.sendMessage(action.message)),
+        map((message) => WebchatActionsMessage.sendMessageSuccess(message)),
+        catchError((err: any, caught: Observable<{ message: MessageInterface }>): Observable<any> => {
+            console.log("Errore nell'invio del messaggio")
+
+            return caught.pipe(
+              map((m) => WebchatActionsMessage.sendMessageError(m.message))
+            )
+          },
+        ));
+    },
+    { dispatch: true });
 }

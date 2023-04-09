@@ -6,6 +6,16 @@ export const sendMessage = createAction(
   (message: MessageInterface) => ({message})
 );
 
+export const sendMessageSuccess = createAction(
+  '[Webchat] Send Message Success',
+  (message: MessageInterface) => ({message})
+);
+
+export const sendMessageError = createAction(
+  '[Webchat] Send Message Error',
+  (message: MessageInterface) => ({message})
+);
+
 export const receiveMessage = createAction(
   '[Webchat] Receive Message',
   (message: MessageInterface) => ({message})
