@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {Observable} from "rxjs";
+import {map, Observable} from "rxjs";
 import {Router} from "@angular/router";
 import {ThemeService} from "../../services/theme.service";
 import {SidebarService} from "../../services/sidebar.service";
@@ -8,6 +8,7 @@ import {AppState} from "../../../store/reducers/index.reducer";
 import {Store} from "@ngrx/store";
 import {AuthSelectors} from "../../../features/auth/store/selectors/selectors-type";
 import {CoreSelectors} from "../../store/selectors/selectors-type";
+import {UserInterface} from "../../../shared/interfaces/user/user.interface";
 
 @Component({
   selector: 'app-sidebar',
@@ -82,7 +83,7 @@ import {CoreSelectors} from "../../store/selectors/selectors-type";
                     </div>
 
                       <div class="ml-2">
-                          <div class="text-sm font-medium text-white">User Name</div>
+                          <div class="text-sm font-medium text-white">{{usernameLogged$ | async}}</div>
                           <!--<div class="status">
                               <div  class="circle"></div>
                               <span class="nameStatus">online</span>
@@ -114,6 +115,8 @@ export class SidebarComponent {
 
   sidebar$: Observable<any> = this.store.select(CoreSelectors.selectSidebar);
   displaySidebarItems$: Observable<sidebarItem[]> = this.store.select(CoreSelectors.selectSidebarItemToDisplay)
+  usernameLogged$: Observable<string> = this.store.select(AuthSelectors.selectUserState)
+    .pipe(map(user => user.username));
 
 
   themeIcon: string[] = [
