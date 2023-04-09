@@ -1,6 +1,5 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {map, Observable} from "rxjs";
-import {Router} from "@angular/router";
 import {ThemeService} from "../../services/theme.service";
 import {SidebarService} from "../../services/sidebar.service";
 import {sidebarItem} from "../../interfaces/sidebar-item.interface"
@@ -8,7 +7,6 @@ import {AppState} from "../../../store/reducers/index.reducer";
 import {Store} from "@ngrx/store";
 import {AuthSelectors} from "../../../features/auth/store/selectors/selectors-type";
 import {CoreSelectors} from "../../store/selectors/selectors-type";
-import {UserInterface} from "../../../shared/interfaces/user/user.interface";
 
 @Component({
   selector: 'app-sidebar',

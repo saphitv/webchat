@@ -1,6 +1,12 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {WebchatService} from "../../services/webchat.service";
 import {UserInterface} from "../../interfaces/user.interface";
+import {MessageInterface, SendStatus} from "../../interfaces/message.interface";
+import {WebchatSelectors} from "../../store/selectors/selectors-type";
+import {AuthSelectors} from "../../../auth/store/selectors/selectors-type";
+import {AppState} from "../../../../store/reducers/index.reducer";
+import {Store} from "@ngrx/store";
+import {combineLatest, filter, map} from "rxjs";
 
 @Component({
   selector: 'app-inputbar',
@@ -19,17 +25,38 @@ import {UserInterface} from "../../interfaces/user.interface";
   styles: [
   ]
 })
-export class InputbarComponent implements OnInit {
-  @Input() chatWithUser!: UserInterface
+export class InputbarComponent {
+  webchatService = inject(WebchatService)
+  store = inject(Store<AppState>)
 
-  constructor(private webchat: WebchatService) { }
 
-  ngOnInit(): void {
-  }
+  // get from the store the current user  and the user authenticated
+  messageInformation$ = combineLatest(
+    [this.store.select(WebchatSelectors.selectCurrentChat), this.store.select(AuthSelectors.selectUserState), this.store.select(WebchatSelectors.selectUsers)]
+  ).pipe(
+    filter(([userToChatWith, userAuthenticated, users]) => userToChatWith != null && userAuthenticated != null && users.length > 0),
+    map(
+      ([userToChatWith, userAuthenticated, users]) =>
+        [userToChatWith, users.filter((user: UserInterface) => user.self)[0]]
+    )
+  )
 
   sendMessage(inputValue: HTMLInputElement){
-    this.webchat.sendMessageTo('message', inputValue.value, this.chatWithUser.username)
-    inputValue.value = ''
+
+    this.messageInformation$.subscribe(([userToChatWith, userAuthenticated]) => {
+      const message: MessageInterface = {
+        to: userToChatWith!,
+        cnt: inputValue.value,
+        type: 'message',
+        from: userAuthenticated!,
+        id: Math.random() * 1000000,
+        sendStatus: SendStatus.sending
+      }
+      console.log(message)
+
+      this.webchatService.sendMessage(message)
+      inputValue.value = ''
+    }).unsubscribe()
   }
 
 }

@@ -34,7 +34,7 @@ import {WebchatSelectors} from "../../store/selectors/selectors-type";
 
 
 
-      <app-inputbar [chatWithUser]="userToChatWith"></app-inputbar>
+      <app-inputbar></app-inputbar>
     </ng-container>
 
   `,

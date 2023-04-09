@@ -48,8 +48,10 @@ io.on("connection", (socket) => {
     username: socket.user.username,
   })
 
-  socket.on("private message", (mes) => {
-    socket.to(mes.toSocket).emit("private message", {
+  socket.on("private message", ({mes}) => {
+    console.log("private message", mes)
+    console.log(mes.from.username, " -> " , mes.to.username, ": ", mes.cnt)
+    socket.to(mes.to.socketId).emit("private message", {
       ...mes
     })
   })
