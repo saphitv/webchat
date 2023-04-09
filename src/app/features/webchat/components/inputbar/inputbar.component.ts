@@ -43,7 +43,7 @@ export class InputbarComponent {
   )
 
   sendMessage(inputValue: HTMLInputElement){
-    const test = this.messageInformation$
+    this.messageInformation$
       .pipe(first())
       .subscribe(([userToChatWith, userAuthenticated]) => {
       const message: MessageInterface = {

@@ -5,7 +5,6 @@ import {Router} from "@angular/router";
 import {WebchatActionsMessage, WebchatActionsUser} from "../actions/actions-type";
 import {WebchatService} from "../../services/webchat.service";
 import {MessageInterface} from "../../interfaces/message.interface";
-import {combineLatest} from "rxjs/internal/operators/combineLatest";
 
 @Injectable()
 export class WebchatEffect {
@@ -53,7 +52,7 @@ export class WebchatEffect {
             console.log("Errore nella ricezione del messaggio")
 
             return caught.pipe(
-              map((m) => WebchatActionsMessage.receiveMessageError())
+              map((_) => WebchatActionsMessage.receiveMessageError())
             )
         })
       )
