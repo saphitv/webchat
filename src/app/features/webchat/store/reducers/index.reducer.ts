@@ -66,5 +66,9 @@ export const WebchatReducer: ActionReducer<WebchatState> = createReducer(
 
     return {...state, messages: {...state.messages, [props.message.to.id]: newUserMes}}
   }),
+
+  on(WebchatActionsMessage.receiveMessage, (state: WebchatState, props: {message: MessageInterface}): WebchatState =>
+    ({...state, messages: {...state.messages, [props.message.from.id]: [...(state.messages[props.message.from.id] || []), props.message]}})
+  )
 );
 

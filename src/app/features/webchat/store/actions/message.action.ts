@@ -17,7 +17,17 @@ export const sendMessageError = createAction(
 );
 
 export const receiveMessage = createAction(
-  '[Webchat] Receive Message',
+  '[Webchat Effect] Receive Message',
   (message: MessageInterface) => ({message})
 );
+
+export const serverMessage = createAction(
+  '[SocketIO Server] Server Message',
+  (message: MessageInterface) => ({message})
+);
+
+export const receiveMessageError = createAction(
+  '[Webchat Effect] Receive Message Error'
+);
+
 

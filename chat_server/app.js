@@ -49,7 +49,7 @@ io.on("connection", (socket) => {
   })
 
   socket.on("private message", ({mes}) => {
-    console.log("private message", mes)
+    //console.log("private message", mes)
     console.log(mes.from.username, " -> " , mes.to.username, ": ", mes.cnt)
     socket.to(mes.to.socketId).emit("private message", {
       ...mes

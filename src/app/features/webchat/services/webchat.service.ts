@@ -5,7 +5,7 @@ import {AuthService} from "../../auth/services/auth.service";
 import {AppState} from "../../../store/reducers/index.reducer";
 import {Store} from "@ngrx/store";
 import {AuthSelectors} from "../../auth/store/selectors/selectors-type";
-import { WebchatActionsUser } from "../store/actions/actions-type";
+import {WebchatActionsMessage, WebchatActionsUser} from "../store/actions/actions-type";
 import {UserInterface} from "../interfaces/user.interface";
 import {MessageInterface} from "../interfaces/message.interface";
 import {WebchatSelectors} from "../store/selectors/selectors-type";
@@ -74,12 +74,9 @@ export class WebchatService {
     })
 
     // incoming messages
-    /*this.socket.fromEvent('private message').subscribe((mes: any) => {
-      let m = this.messages.value
-      //console.log("message", mes)
-
-      this.messages.next([...m, {to: mes.to, cnt: mes.cnt, type: mes.type, from: "test"}])
-    })*/
+    this.socket.fromEvent('private message').subscribe((mes: any) => {
+      this.store.dispatch(WebchatActionsMessage.serverMessage(mes))
+    })
 
     this.socket.fromEvent("user disconnected").subscribe((user: any) => {
       this.store.dispatch(WebchatActionsUser.disconnectUser(user.id))

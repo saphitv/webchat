@@ -6,7 +6,8 @@ import {WebchatSelectors} from "../../store/selectors/selectors-type";
 import {AuthSelectors} from "../../../auth/store/selectors/selectors-type";
 import {AppState} from "../../../../store/reducers/index.reducer";
 import {Store} from "@ngrx/store";
-import {combineLatest, filter, map} from "rxjs";
+import {combineLatest, filter, first, map} from "rxjs";
+import {WebchatActionsMessage} from "../../store/actions/actions-type";
 
 @Component({
   selector: 'app-inputbar',
@@ -42,8 +43,9 @@ export class InputbarComponent {
   )
 
   sendMessage(inputValue: HTMLInputElement){
-
-    this.messageInformation$.subscribe(([userToChatWith, userAuthenticated]) => {
+    const test = this.messageInformation$
+      .pipe(first())
+      .subscribe(([userToChatWith, userAuthenticated]) => {
       const message: MessageInterface = {
         to: userToChatWith!,
         cnt: inputValue.value,
@@ -52,11 +54,11 @@ export class InputbarComponent {
         id: Math.random() * 1000000,
         sendStatus: SendStatus.sending
       }
-      console.log(message)
 
-      this.webchatService.sendMessage(message)
+      this.store.dispatch(WebchatActionsMessage.sendMessage(message))
       inputValue.value = ''
-    }).unsubscribe()
+    })
+
   }
 
 }

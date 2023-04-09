@@ -43,4 +43,19 @@ export class WebchatEffect {
         ));
     },
     { dispatch: true });
+
+  receiveMessage$ = createEffect(
+    () => {
+      return this.actions$.pipe(
+        ofType(WebchatActionsMessage.serverMessage),
+        map(action => WebchatActionsMessage.receiveMessage(action.message)),
+        catchError((err: any, caught: Observable<{ message: MessageInterface }>): Observable<any> => {
+            console.log("Errore nella ricezione del messaggio")
+
+            return caught.pipe(
+              map((m) => WebchatActionsMessage.receiveMessageError())
+            )
+        })
+      )
+    })
 }
