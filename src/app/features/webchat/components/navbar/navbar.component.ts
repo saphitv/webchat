@@ -1,22 +1,28 @@
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, OnInit} from '@angular/core';
+import {WebchatSelectors} from "../../store/selectors/selectors-type";
+import {WebchatState} from "../../store/reducers/index.reducer";
+import {Store} from "@ngrx/store";
 
 @Component({
   selector: 'app-navbar',
   template: `
     <div class="h-12 w-full bg-primary">
-      <ng-content></ng-content>
+      <ng-container
+        *ngIf="userToChatWith$ | async as userToChatWith">
+
+        <div>
+            {{userToChatWith.username}}
+        </div>
+      </ng-container>
     </div>
   `,
   styles: [
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class NavbarComponent implements OnInit {
+export class NavbarComponent {
+  store = inject(Store<WebchatState>)
 
-
-  constructor() { }
-
-  ngOnInit(): void {
-  }
+  userToChatWith$ = this.store.select(WebchatSelectors.selectCurrentChat)
 
 }

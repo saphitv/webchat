@@ -18,6 +18,7 @@ export class WebchatService {
 
   connect() {
     this.socketService.connectToSocket()
+    console.log("socket connected", this.socketService.isConnected.value)
 
     // init user
     const ref = combineLatest([this.socketService.fromEvent<UserInterface[]>("users_init"), this.store.select(AuthSelectors.selectUserState)])
@@ -39,6 +40,7 @@ export class WebchatService {
 
     // incoming messages
     this.socketService.fromEvent('private message').subscribe((mes: any) => {
+      console.log("incoming message", mes)
       this.store.dispatch(WebchatActionsMessage.serverMessage(mes))
     })
 

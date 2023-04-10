@@ -1,27 +1,27 @@
-import {ChangeDetectionStrategy, Component, OnInit, SimpleChanges} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, OnInit, SimpleChanges} from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
-import { ReplaySubject, Subscription} from 'rxjs';
+import {concatMap, filter, ReplaySubject, Subscription, tap} from 'rxjs';
 import {Store} from "@ngrx/store";
 import {WebchatState} from "../../store/reducers/index.reducer";
 import {WebchatSelectors} from "../../store/selectors/selectors-type";
+import {AuthSelectors} from "../../../auth/store/selectors/selectors-type";
+import {selectMessagesFromCurrentChat} from "../../store/selectors/webchat.selector";
 
 @Component({
   selector: 'app-chat-body',
   template: `
-    <ng-container *ngIf="userToChatWith | async as userToChatWith">
-      <app-navbar>
-        {{ userToChatWith.username }}
-      </app-navbar>
+    <ng-container *ngIf="userAuthenticated$ | async as userAuthenticated">
+      <app-navbar></app-navbar>
       <div class="w-full h-full" style="height: calc(100vh - 4rem - 4rem)">
-        <ng-container *ngFor="let mes of messages | async">
-          <div class="chat" [ngClass]="{'chat-start': mes.from != 'test', 'chat-end': mes.from == 'test'}">
+        <ng-container *ngFor="let mes of messages$ | async">
+          <div class="chat" [ngClass]="{'chat-start': userAuthenticated.id != mes.from.id, 'chat-end':  userAuthenticated.id == mes.from.id}">
             <div class="chat-image avatar">
               <div class="w-10 rounded-full">
                 <!--<img src="/images/stock/photo-1534528741775-53994a69daeb.jpg" />-->
               </div>
             </div>
             <div class="chat-header">
-                {{mes.from}}
+                {{mes.from.username}}
               <time class="text-xs opacity-50">12:45</time>
             </div>
             <div class="chat-bubble">{{mes.cnt}}</div>
@@ -42,34 +42,11 @@ import {WebchatSelectors} from "../../store/selectors/selectors-type";
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ChatBodyComponent implements OnInit {
+export class ChatBodyComponent {
 
-  userToChatWith = this.store.select(WebchatSelectors.selectCurrentChat)
-  messages: ReplaySubject<any> = new ReplaySubject<any>(1)
+  store = inject(Store<WebchatState>)
 
+  userAuthenticated$ = this.store.select(AuthSelectors.selectUserState)
 
-  constructor(private activatedRoute: ActivatedRoute, private store: Store<WebchatState>) {
-
-
-    let subs: Subscription[] = []
-
-    this.userToChatWith?.subscribe(user => {
-      if(subs.length > 0)
-        subs.forEach(sub => sub.unsubscribe())
-
-     /* subs.push(this.webchat.getMessageFromChat(user).subscribe(mes => {
-        this.messages.next(mes)
-      }))*/
-
-    })
-  }
-
-  ngOnInit(): void {
-    /*this.userToChatWith?.subscribe(username => {
-      this.webchat.userToChatWith.next(username)
-    })*/
-  }
-
-
-
+  messages$ = this.store.select(WebchatSelectors.selectMessagesFromCurrentChat)
 }
