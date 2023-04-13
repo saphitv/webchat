@@ -12,7 +12,7 @@ import {SharedModule} from "./shared/shared.module";
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import {EffectsModule} from "@ngrx/effects";
 import {AuthModule} from "./features/auth/auth.module";
-import {StoreRouterConnectingModule} from "@ngrx/router-store";
+import { RouterState, StoreRouterConnectingModule } from '@ngrx/router-store';
 
 const config: SocketIoConfig = {
   url: 'https://localhost:3001', // socket server url;
@@ -49,7 +49,7 @@ const config: SocketIoConfig = {
 
     StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: !isDevMode() }),
 
-    StoreRouterConnectingModule.forRoot({ stateKey: 'router'}),
+    StoreRouterConnectingModule.forRoot({ stateKey: 'router', routerState: RouterState.Minimal}),
   ],
   providers: [AuthService],
   bootstrap: [AppComponent]
