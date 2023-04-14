@@ -1,27 +1,37 @@
-# NodeSecurity
+# Webchat with websocket
+Welcome to the Webchat repository! This repository contains a web-based chat application that allows users to communicate with each other in real-time.
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 14.1.1.
+## Features
+- [x] User registration and login
+- [ ] Real-time chat with other users
+- [ ] Support for multiple chat rooms
+- [ ] Ability to view chat history
+- [ ] Group chat
 
-## Development server
+## Getting started
+To get started with the webchat application, follow these steps:
+1. Clone the repository to your local machine using the following command: 
+  ```bash
+  git clone https://github.com/your-username/webchat.git
+  ```
+2. Install the necessary dependencies using the following command:
+  ```bash
+  npm install
+ ```
+3. Start the application using the following command:
+  ```bash
+  npm start
+  ```
+    Open your web browser and navigate to http://localhost:3000 to access the webchat application.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
-
-## Code scaffolding
-
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
-
-## Build
-
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
-
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+## Contributing
+We welcome contributions from anyone interested in improving the webchat application. If you would like to contribute, please follow the steps below:
+1. Fork the repository to your own GitHub account.
+1. Create a new branch for your changes.
+1. Make your changes and commit them to your branch.
+1. Push your changes to your forked repository.
+1. Submit a pull request to have your changes reviewed and merged into the main repository.
+## Issues
+If you encounter any issues with the webchat application, please report them using the GitHub Issues feature. We appreciate your feedback and will work to resolve any issues as quickly as possible.
+## License
+The Webchat application is open source software licensed under the MIT License. See the LICENSE file for more information.
