@@ -20,9 +20,11 @@ To get started with the webchat application, follow these steps:
  ```
 3. Start the application using the following command:
   ```bash
+  npm run chat_server
+  npm run auth_server
   npm start
   ```
-    Open your web browser and navigate to http://localhost:3000 to access the webchat application.
+Open your web browser and navigate to https://localhost:4200 to access the webchat application.
 
 ## Contributing
 We welcome contributions from anyone interested in improving the webchat application. If you would like to contribute, please follow the steps below:
