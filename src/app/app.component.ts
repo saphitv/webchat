@@ -17,7 +17,7 @@ import {CoreSelectors} from "./core/store/selectors/selectors-type";
       <app-sidebar></app-sidebar>
     </div>
 
-      <div class="relative transition-all"
+      <div class="relative transition-all bg-zinc-800"
            style="z-index: 0; width: calc(100vw - {{ leftWidth }}px); left: {{ leftWidth }}px">
           <router-outlet></router-outlet>
       </div>

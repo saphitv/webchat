@@ -13,7 +13,7 @@ import {CoreSelectors} from "../../store/selectors/selectors-type";
   template: `
       <div></div>
       <ng-container *ngIf="this.sidebar$ | async as sidebar">
-          <nav class="fixed top-0 left-0 h-screen px-4 py-3 bg-slate-100 dark:bg-zinc-800 rounded-r-md shadow transition-all"
+          <nav class="fixed top-0 left-0 h-screen px-4 py-3 bg-slate-100 dark:bg-zinc-800 transition-all"
                [ngClass]="{'!w-[240px]': sidebar.open, 'w-[78px]': !sidebar.open}"
           >
               <!-- menu icon -->

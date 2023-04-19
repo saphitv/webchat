@@ -12,7 +12,7 @@ export interface WebchatState {
 export const initialCoreState: WebchatState = {
   users: [],
   currentChat: null,
-  messages: {},
+  messages: { 2: [{ from: {id: 1, username: "saphitv", socketId: "", self: true}, to: {id: 2, socketId: "", self: false, username: "simon"}, type: "message", cnt: 'ciao', sendStatus: SendStatus.sent, id: 1 }] },
   usersLoaded: false,
 };
 

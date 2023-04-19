@@ -6,7 +6,9 @@ import {AuthSelectors} from "../../../auth/store/selectors/selectors-type";
 
 const featureSelector = createFeatureSelector <WebchatState> ( 'webchat' );
 
-export const selectUsers = createSelector(featureSelector, (state: WebchatState) => state.users);
+export const selectUsers = createSelector(
+  featureSelector,
+  (state: WebchatState) => state.users);
 export const selectCurrentChat = createSelector(featureSelector, (state: WebchatState) => state.currentChat);
 
 export const selectUserByName = (props: { name: string}) =>
@@ -34,3 +36,5 @@ export const selectMessagesFromCurrentChat = createSelector(
       : []
   }
 )
+
+export const isUserSelected = createSelector(featureSelector, (state: WebchatState) => state.currentChat != null);

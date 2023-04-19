@@ -1,13 +1,13 @@
-import {Component, inject} from '@angular/core';
-import {WebchatService} from "../../services/webchat.service";
-import {UserInterface} from "../../interfaces/user.interface";
-import {MessageInterface, SendStatus} from "../../interfaces/message.interface";
-import {WebchatSelectors} from "../../store/selectors/selectors-type";
-import {AuthSelectors} from "../../../auth/store/selectors/selectors-type";
-import {AppState} from "../../../../store/reducers/index.reducer";
+import {Component, inject, Input} from '@angular/core';
+import {WebchatService} from "../services/webchat.service";
+import {UserInterface} from "../interfaces/user.interface";
+import {MessageInterface, SendStatus} from "../interfaces/message.interface";
+import {WebchatSelectors} from "../store/selectors/selectors-type";
+import {AuthSelectors} from "../../auth/store/selectors/selectors-type";
+import {AppState} from "../../../store/reducers/index.reducer";
 import {Store} from "@ngrx/store";
-import {combineLatest, filter, first, map} from "rxjs";
-import {WebchatActionsMessage} from "../../store/actions/actions-type";
+import {combineLatest, filter, first, map, tap} from "rxjs";
+import {WebchatActionsMessage} from "../store/actions/actions-type";
 
 @Component({
   selector: 'app-inputbar',
@@ -27,6 +27,9 @@ import {WebchatActionsMessage} from "../../store/actions/actions-type";
   ]
 })
 export class InputbarComponent {
+  @Input() scrollToBottom!: (cnt: HTMLDivElement) => void
+  @Input() cnt!: HTMLDivElement
+
   webchatService = inject(WebchatService)
   store = inject(Store<AppState>)
 
@@ -57,6 +60,11 @@ export class InputbarComponent {
 
       this.store.dispatch(WebchatActionsMessage.sendMessage(message))
       inputValue.value = ''
+
+        setTimeout(() => {
+          //this.scrollToBottom(this.cnt)
+        }, 10)
+
     })
 
   }
