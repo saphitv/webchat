@@ -1,17 +1,20 @@
 const debug = require('debug')('auth_server:auth_server');
-const https = require('https');
-const {PRIVATE_KEY, PUBLIC_KEY} = require("../auth_server/data/security.utils");
-const {Server} = require('socket.io')
+const { createServer } = require('https');
+const { PRIVATE_KEY, PUBLIC_KEY } = require("../auth_server/data/security.utils");
+const { Server } = require('socket.io')
 const sessionTokenMiddleware = require("./auth");
-const {onDisconnect} = require("./defaultEvent");
-const {partial} = require("lodash");
+const { onDisconnect } = require("./defaultEvent");
+const { partial } = require("lodash");
+const express = require("express")
 
-var options = {
+const options = {
   key: PRIVATE_KEY, cert: PUBLIC_KEY
 };
 
-var port = normalizePort(process.env.PORT || '3001');
-var server = https.createServer(options);
+const app = express()
+
+const port = normalizePort(process.env.PORT || '3001');
+const server = createServer(options, app);
 
 const io = new Server(server, {cors: {origin: "https://localhost:4200"}})
 
