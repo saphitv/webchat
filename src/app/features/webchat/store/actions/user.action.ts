@@ -1,6 +1,5 @@
 import {createAction} from "@ngrx/store";
 import {UserInterface} from "../../interfaces/user.interface";
-import {MessageInterface} from "../../interfaces/message.interface";
 
 export const setUsers = createAction(
   '[Webchat] Set Users',
@@ -22,12 +21,7 @@ export const setCurrentChat = createAction(
   (user: UserInterface) => ({user})
 );
 
-export const sendMessage = createAction(
-  '[Webchat] Send Message',
-  (message: MessageInterface) => ({message})
-);
-
-export const receiveMessage = createAction(
-  '[Webchat] Receive Message',
-  (message: MessageInterface) => ({message})
+export const loadedUsers = createAction(
+  '[Webchat] User Loaded',
+  (loading: boolean) => ({loading})
 );

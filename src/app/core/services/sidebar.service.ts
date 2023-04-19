@@ -1,5 +1,4 @@
-import { Injectable } from '@angular/core';
-import {BehaviorSubject} from "rxjs";
+import {inject, Injectable} from '@angular/core';
 import {CoreState} from "../store/reducers/index.reducers";
 import {Store} from "@ngrx/store";
 import {CoreActions} from "../store/actions/actions-type";
@@ -7,11 +6,14 @@ import {CoreSelectors} from "../store/selectors/selectors-type";
 import {LoginActions} from "../../features/auth/store/actions/actions-type";
 import {Router} from "@angular/router";
 import {sidebarItem} from "../interfaces/sidebar-item.interface";
+import {AuthService} from "../../features/auth/services/auth.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class SidebarService {
+  authService = inject(AuthService)
+
 
   initialSidebarItem: sidebarItem[] = [
     {
@@ -31,6 +33,7 @@ export class SidebarService {
     },
     {
       name: 'Logout', onClick: () => {
+        this.authService.logout()
         this.store.dispatch(LoginActions.userLoggedOut())
         this.router.navigateByUrl('')
       },
@@ -52,9 +55,8 @@ export class SidebarService {
     this.store.dispatch(CoreActions.toggleSidebar())
     const isSidebarOpen = this.store.select(CoreSelectors.isSidebarOpen)
 
-    const ref = isSidebarOpen.subscribe(isOpen => {
+    isSidebarOpen.subscribe(isOpen => {
       localStorage.setItem('sidebarStatus', isOpen ? 'open' : 'close');
-      ref.unsubscribe()
-    })
+    }).unsubscribe()
   }
 }

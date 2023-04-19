@@ -35,8 +35,10 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.isLoggedIn$.subscribe(isLoggedIn => {
-      if(isLoggedIn)
+      if(isLoggedIn) {
         this.router.navigateByUrl('webchat')
+      }
+
     })
   }
 

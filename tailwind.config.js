@@ -7,7 +7,12 @@ module.exports = {
     extend: {
       colors: {
         'c-red': '#e45858',
-        'c-purple': '#6246ea'
+        'c-purple': '#6246ea',
+        'dark-primary': '#2e333d',
+        'dark-secondary': '#3a3e46',
+        'dark-thirdary' : '#131313',
+        'dark-action': '#6b8afd',
+        'dark-text': '#ffffff',
       }
     },
 

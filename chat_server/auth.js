@@ -6,9 +6,7 @@ const decodeJwt = token => {
 }
 
 async function handleSessionCookie(jwt){
-    const payload = await decodeJwt(jwt)
-
-    return payload
+    return decodeJwt(jwt);
 }
 
 const retrieveUserIdFromRequest = (jwt, socket, next) => {
@@ -23,7 +21,7 @@ const retrieveUserIdFromRequest = (jwt, socket, next) => {
         next()
       })
       .catch(err => {
-        console.log(err)
+        console.log(err.message)
         next()
       })
 

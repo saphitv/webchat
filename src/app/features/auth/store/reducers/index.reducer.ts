@@ -1,12 +1,18 @@
-import { ActionReducerMap } from '@ngrx/store';
-import { routerReducer } from '@ngrx/router-store';
-import { RouterState } from '@angular/router';
+import {ActionReducerMap} from '@ngrx/store';
 import {userReducer, UserState} from "./user.reducer";
+import {authReducer, AuthStateSub} from "./auth.reducer";
 
 export interface AuthState {
-  user: UserState
+  user: UserState,
+  other: AuthStateSub
 }
 
+
+
+
+
+
 export const reducers: ActionReducerMap<AuthState> = {
-  user: userReducer
+  user: userReducer,
+  other: authReducer
 };

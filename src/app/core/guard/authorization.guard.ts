@@ -1,4 +1,4 @@
-import {Inject, Injectable} from '@angular/core';
+import {Inject} from '@angular/core';
 import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot, UrlTree} from '@angular/router';
 import {map, Observable, first, tap} from 'rxjs';
 import {AuthService} from "../../features/auth/services/auth.service";
@@ -18,6 +18,7 @@ export class AuthorizationGuard implements CanActivate {
       first(),
       tap(allowed => {
         if(!allowed){
+          console.log("not allowed")
           this.router.navigateByUrl('/')
         }
       })

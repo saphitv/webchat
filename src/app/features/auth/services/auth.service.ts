@@ -2,10 +2,6 @@ import {Injectable} from '@angular/core';
 import {catchError, filter, map, Observable, of, ReplaySubject, shareReplay, Subject, tap} from "rxjs";
 import {UserInterface} from "../../../shared/interfaces/user/user.interface";
 import {HttpClient} from "@angular/common/http";
-import {AuthState} from "../store/reducers/index.reducer";
-import {Store} from "@ngrx/store";
-import {LoginActions} from "../store/actions/actions-type";
-import {RegisterUserInterface} from "../../../shared/interfaces/user/registerUser.interface";
 import {LoginUserInterface} from "../../../shared/interfaces/user/loginUser.interface";
 
 export const ANONYMOUS_USER: UserInterface = {
@@ -44,7 +40,7 @@ export class AuthService {
   isLoggedIn$: Observable<boolean> = this.user$.pipe(map(user => !!user.id))
   isLoggedOut$: Observable<boolean> = this.isLoggedIn$.pipe(map(isLogged => !isLogged))
 
-  constructor(private http: HttpClient, private store: Store<AuthState>) {
+  constructor(private http: HttpClient) {
 
     /*this.http.get<UserInterface>('/api/user')
       .subscribe(user => {
@@ -80,12 +76,10 @@ export class AuthService {
       )
   }
 
-  logout(): Observable<any> {
-    return this.http.post('/api/auth/logout', {})
-      .pipe(
-        shareReplay(),
-        tap(() => this.subject.next(ANONYMOUS_USER))
-      )
+  logout() {
+    const ref = this.http.post('/api/auth/logout', {}).subscribe(_ => {
+      ref.unsubscribe()
+    })
   }
 
   loginAsUser(email: string): Observable<any> {

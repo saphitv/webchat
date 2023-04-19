@@ -20,6 +20,13 @@ io.use(sessionTokenMiddleware);
 io.on("connection", (socket) => {
   //console.log("user connected", socket.user.username)
 
+
+  if(!socket.user) {
+    console.log("user not authenticated")
+    socket.disconnect()
+    return
+  }
+
   const users = [];
   for (let [id, socket] of io.of("/").sockets) {
     users.push({
@@ -32,6 +39,7 @@ io.on("connection", (socket) => {
   // console.log("new user emit", users)
   socket.emit("users_init", users);
 
+
   console.log("user connected", socket.user.username)
 
   socket.broadcast.emit("user connected",{
@@ -40,8 +48,10 @@ io.on("connection", (socket) => {
     username: socket.user.username,
   })
 
-  socket.on("private message", (mes) => {
-    socket.to(mes.toSocket).emit("private message", {
+  socket.on("private message", ({mes}) => {
+    //console.log("private message", mes)
+    console.log(mes.from.username, " -> " , mes.to.username, ": ", mes.cnt)
+    socket.to(mes.to.socketId).emit("private message", {
       ...mes
     })
   })

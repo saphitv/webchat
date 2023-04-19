@@ -7,7 +7,7 @@ const routes: Routes = [
   { path: 'lessons', loadChildren: () => import('./features/lessons/lessons.module').then(m => m.LessonsModule) },
   { path: 'admin', loadChildren: () => import('./features/admin/admin.module').then(m => m.AdminModule), canActivate: ["adminsOnlyGuard"]},
   { path: 'webchat', loadChildren: () => import('./features/webchat/webchat.module').then(m => m.WebchatModule), canActivate: [IsLoggedInGuard]},
-  { path: '**', redirectTo: 'auth'}
+  /* { path: '**', redirectTo: 'auth'} */ // This is the default route
 ];
 
 @NgModule({
