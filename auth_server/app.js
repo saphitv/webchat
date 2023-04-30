@@ -3,6 +3,7 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const _ = require('lodash')
+const mysql = require('mysql');
 
 const indexRouter = require('./routes');
 const lessonsRouter = require('./routes/lessons');

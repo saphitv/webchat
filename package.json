@@ -11,7 +11,8 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "auth_server": "nodemon auth_server/bin/www --watch 'auth_server/**/*.js'",
-    "chat_server": "nodemon chat_server/app.js --watch 'chat_server/**.js'"
+    "chat_server": "nodemon chat_server/app.js --watch 'chat_server/**.js'",
+    "db_server": "nodemon db/index.js --watch 'db/index.js'"
   },
   "private": true,
   "dependencies": {
