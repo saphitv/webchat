@@ -3,6 +3,8 @@ Welcome to the Webchat repository! This repository contains a web-based chat app
 
 ## Features
 - [x] User registration and login
+- [ ] QRCode for every user
+- [ ] Share position
 - [ ] Real-time chat with other users
 - [ ] Support for multiple chat rooms
 - [ ] Ability to view chat history
