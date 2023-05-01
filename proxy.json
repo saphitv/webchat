@@ -6,5 +6,11 @@
     "pathRewrite": {
       "^/api": ""
     }
+  },
+  "/socket.io": {
+    "target": "https://localhost:3001",
+    "secure": false,
+    "changeOrigin": true,
+    "ws": true
   }
 }

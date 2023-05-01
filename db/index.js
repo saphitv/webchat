@@ -8,28 +8,20 @@ pool = mysql.createPool({
   port: 8889
 })
 
-const findUserByEmail = async (email) => {
-
-  await pool.query("select * from user where email = ?", [email], (err, result) => {
-    if(err) throw err
-    console.log("res", result)
-    return result
-  })
-  /*await pool.getConnection(async (err, connection) => {
-    if(err) throw err
-
-    console.log("Connected to database")
-    const result = connection.query("select * from user where email = ?", [email], (err, result) => {
-      if(err) throw err
-      console.log(result)
-      return result
+// create a function that query the database and return the result
+const findUserByEmail = (email) => {
+  return new Promise((resolve, reject) => {
+    pool.query("select * from user where email = ?", [email], (err, result) => {
+      if(err) reject(err)
+      resolve(result)
     })
-
-    connection.release()
-  })*/
+  })
 }
 
+
 findUserByEmail("simonmaggini@gmail.com")
-  .then(res => console.log(res))
+  .then((result) => {
+    console.log("result", result)
+  })
 
 module.exports = pool
