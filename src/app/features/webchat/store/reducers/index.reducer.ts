@@ -12,15 +12,17 @@ export interface WebchatState {
   usersLoaded: boolean,
   chatsLoaded: boolean,
   socketConnected: boolean,
+  textChatFilter: string,
 }
 export const initialCoreState: WebchatState = {
   users: [],
   chats: [],
   currentChat: null,
-  messages: { },
+  messages: {},
   usersLoaded: false,
   chatsLoaded: false,
   socketConnected: false,
+  textChatFilter: '',
 };
 
 
@@ -84,12 +86,25 @@ export const WebchatReducer: ActionReducer<WebchatState> = createReducer(
     return {...state, messages: {...state.messages, [props.message.chat_id]: newUserMes}}
   }),
 
-  on(WebchatActionsMessage.receiveMessage, (state: WebchatState, props: {message: MessageInterface}): WebchatState =>
-    ({...state, messages: {...state.messages, [props.message.chat_id]: [...(state.messages[props.message.chat_id] || []), props.message]}})
+  on(WebchatActionsMessage.receiveMessage, (state: WebchatState, props: { message: MessageInterface }): WebchatState =>
+    ({...state,
+      messages: {
+        ...state.messages,
+        [props.message.chat_id]: [...(state.messages[props.message.chat_id] || []), props.message]
+      }
+    })
   ),
 
-  on(WebchatActionsMessage.loadChatMessagesSuccess, (state, props: {messages: MessageInterface[], chatId: number}): WebchatState =>
-    ({...state, messages: {...state.messages, [props.chatId]: props.messages}})
+  on(WebchatActionsMessage.loadChatMessagesSuccess, (state, props: { messages: MessageInterface[], chatId: number }): WebchatState =>
+    ({
+      ...state,
+      messages: {...state.messages, [props.chatId]: props.messages},
+      chats: state.chats.map(c => c.id == props.chatId ? {...c, messageLoaded: true} : c)
+    })
+  ),
+
+  on(WebchatActionsChat.searchChat, (state, props: { text: string }): WebchatState =>
+    ({...state, textChatFilter: props.text})
   ),
 );
 

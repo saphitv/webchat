@@ -1,6 +1,6 @@
 import {inject, Injectable} from '@angular/core';
-import { Actions, createEffect, ofType } from '@ngrx/effects';
-import {catchError, combineLatest, concatMap, from, map, Observable, of, switchMap, tap} from 'rxjs';
+import {Actions, createEffect, ofType} from '@ngrx/effects';
+import {catchError, combineLatest, concatMap, map, Observable, of, switchMap, tap} from 'rxjs';
 import {Router} from "@angular/router";
 import {WebchatActionsChat, WebchatActionsMessage, WebchatActionsUser} from "../actions/actions-type";
 import {WebchatService} from "../../services/webchat.service";
@@ -8,7 +8,6 @@ import {MessageInterface} from "../../interfaces/message.interface";
 import {ChatInterface} from "../../interfaces/chat.interface";
 import {WebchatSelectors} from "../selectors/selectors-type";
 import {Store} from "@ngrx/store";
-import {AppState} from "../../../../store/reducers/index.reducer";
 import {WebchatState} from "../reducers/index.reducer";
 import {AuthSelectors} from "../../../auth/store/selectors/selectors-type";
 import {UserInterface} from "../../interfaces/user.interface";
@@ -54,22 +53,14 @@ export class WebchatEffect {
           })
         ),
 
-        tap(({chats, users}) => {
-          console.log("Chats: ", chats)
-          console.log("Users: ", users)
-
-          chats.forEach(chat => {
-            console.log(users.find(user => chat.users.includes(user.id)), chat.users.includes("1" as any))
-          })
-        }),
-
 
         // imposta il nome delle chat private
         map(({chats, users}) =>
           chats.map((chat: ChatInterface) => (
             {
               ...chat,
-              name: chat.name ? chat.name : users.filter(user => !user.self).find(user => chat.users.includes(user.id.toString() as any))?.username
+              name: chat.name ? chat.name : users.filter(user => !user.self).find(user => chat.users.includes(user.id.toString() as any))?.username,
+              messageLoaded: false
             }))
         ),
 
@@ -102,7 +93,7 @@ export class WebchatEffect {
     () =>
       this.actions$.pipe(
         ofType(WebchatActionsMessage.loadChatMessages),
-        concatMap((action) => combineLatest([
+        switchMap((action) => combineLatest([
           this.webchatService.getMessages(action.chatId),
           of(action.chatId)
         ])),

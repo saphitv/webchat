@@ -6,7 +6,7 @@ import {WebchatSelectors} from "../store/selectors/selectors-type";
 import {AuthSelectors} from "../../auth/store/selectors/selectors-type";
 import {AppState} from "../../../store/reducers/index.reducer";
 import {Store} from "@ngrx/store";
-import {combineLatest, filter, first, map, tap} from "rxjs";
+import {combineLatest, filter, first, map} from "rxjs";
 import {WebchatActionsMessage} from "../store/actions/actions-type";
 
 @Component({
@@ -49,7 +49,6 @@ export class InputbarComponent {
     this.messageInformation$
       .pipe(first())
       .subscribe(([currentChat, userAuthenticated]) => {
-        console.log(userAuthenticated)
       const message: MessageInterface = {
         chat_id: currentChat!.id!,
         cnt: inputValue.value,

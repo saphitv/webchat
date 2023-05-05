@@ -1,12 +1,11 @@
 import {Component, inject, OnInit} from '@angular/core';
 import {WebchatService} from "./services/webchat.service";
-import {combineLatest, concatMap, filter, tap} from "rxjs";
+import {filter} from "rxjs";
 import {WebchatSelectors} from "./store/selectors/selectors-type";
-import {WebchatActionsMessage, WebchatActionsUser} from "./store/actions/actions-type";
+import {WebchatActionsMessage} from "./store/actions/actions-type";
 import {WebchatState} from "./store/reducers/index.reducer";
 import {Store} from "@ngrx/store";
 import {ActivatedRoute, Router} from "@angular/router";
-import {AuthSelectors} from "../auth/store/selectors/selectors-type";
 
 @Component({
   selector: 'app-webchat',
@@ -71,10 +70,14 @@ export class WebchatComponent implements OnInit {
     this.store.select(WebchatSelectors.selectCurrentChat)
       .pipe(
         filter(chat => chat != null),
-        tap(chat => {
-          this.store.dispatch(WebchatActionsMessage.loadChatMessages({chatId: chat!.id}))
-        })
-      ).subscribe()
+        /*concatMap(chat => {
+          return combineLatest([this.store.select(WebchatSelectors.selectMessagesByChatId({chatId: chat!.id})), of(chat)]).pipe(first())
+        }),*/
+        filter((chat) => chat!.messageLoaded == false),
+        // map(([messages, chat]) => chat),
+      ).subscribe(chat => {
+      this.store.dispatch(WebchatActionsMessage.loadChatMessages({chatId: chat!.id}))
+    })
   }
 
 }

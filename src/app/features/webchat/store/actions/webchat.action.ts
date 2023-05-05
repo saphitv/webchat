@@ -1,4 +1,4 @@
-import {createAction} from "@ngrx/store";
+import {createAction, props} from "@ngrx/store";
 import {UserInterface} from "../../interfaces/user.interface";
 
 export const loadUsers = createAction(
@@ -32,4 +32,9 @@ export const loadChatsFailure = createAction(
 export const setSocketConnected = createAction(
   '[Webchat] Set Socket Connected',
   (socketConnected: boolean) => ({socketConnected})
+);
+
+export const searchChat = createAction(
+  '[Webchat] Search Chat',
+  props<{ text: string }>()
 );
