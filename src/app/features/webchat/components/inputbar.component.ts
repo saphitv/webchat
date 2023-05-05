@@ -41,19 +41,20 @@ export class InputbarComponent {
     filter(([userToChatWith, userAuthenticated, users]) => userToChatWith != null && userAuthenticated != null && users.length > 0),
     map(
       ([userToChatWith, userAuthenticated, users]) =>
-        [userToChatWith, users.filter((user: UserInterface) => user.self)[0]]
+        [userToChatWith, {...userAuthenticated, self: true}]
     )
   )
 
   sendMessage(inputValue: HTMLInputElement){
     this.messageInformation$
       .pipe(first())
-      .subscribe(([userToChatWith, userAuthenticated]) => {
+      .subscribe(([currentChat, userAuthenticated]) => {
+        console.log(userAuthenticated)
       const message: MessageInterface = {
-        to: userToChatWith!,
+        chat_id: currentChat!.id!,
         cnt: inputValue.value,
-        type: 'message',
-        from: userAuthenticated!,
+        type: 'TEXT',
+        from: userAuthenticated as UserInterface,
         id: Math.random() * 1000000,
         sendStatus: SendStatus.sending
       }

@@ -2,8 +2,7 @@ import {Inject} from '@angular/core';
 import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot, UrlTree} from '@angular/router';
 import {map, Observable, first, tap} from 'rxjs';
 import {AuthService} from "../../features/auth/services/auth.service";
-import * as _ from "lodash"
-
+// import * as _ from 'lodash';
 @Inject({})
 export class AuthorizationGuard implements CanActivate {
 
@@ -14,7 +13,8 @@ export class AuthorizationGuard implements CanActivate {
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
 
     return this.authService.user$.pipe(
-      map(user => _.intersection(this.allowedRoles, user.roles).length > 0),
+      /* map(user => _.intersection(this.allowedRoles, user.roles).length > 0), */
+      map(user => this.intersect(this.allowedRoles, user.roles).length > 0),
       first(),
       tap(allowed => {
         if(!allowed){
@@ -25,4 +25,13 @@ export class AuthorizationGuard implements CanActivate {
     )
   }
 
+  intersect(a: any, b: any) {
+    const setA = new Set(a);
+    const setB = new Set(b);
+    const intersection = new Set([...setA].filter(x => setB.has(x)));
+    return Array.from(intersection);
+  }
+
 }
+
+

@@ -9,6 +9,10 @@ const featureSelector = createFeatureSelector <WebchatState> ( 'webchat' );
 export const selectUsers = createSelector(
   featureSelector,
   (state: WebchatState) => state.users);
+
+export const selectChats = createSelector(
+  featureSelector,
+  (state: WebchatState) => state.chats);
 export const selectCurrentChat = createSelector(featureSelector, (state: WebchatState) => state.currentChat);
 
 export const selectUserByName = (props: { name: string}) =>
@@ -17,6 +21,8 @@ export const selectUserByName = (props: { name: string}) =>
   })
 
 export const areUsersLoaded = createSelector(featureSelector, (state: WebchatState) => state.usersLoaded);
+export const areChatsLoaded = createSelector(featureSelector, (state: WebchatState) => state.chatsLoaded);
+export const isSocketConnected = createSelector(featureSelector, (state: WebchatState) => state.socketConnected);
 
 export const selectMessages = createSelector(featureSelector, (state: WebchatState) => state.messages);
 

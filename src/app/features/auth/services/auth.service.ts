@@ -25,11 +25,11 @@ export class AuthService {
   }*/
 
   checkIfJwtValid(): Observable<UserInterface>{
-    return this.http.get<UserInterface>('/api/user')
+    return this.http.get<UserInterface>('/api/auth/user')
   }
 
   login(user: LoginUserInterface): Observable<UserInterface> {
-    return this.http.post<UserInterface>('/api/auth/login', {email: user.email, password: user.password})
+    return this.http.post<UserInterface>('/api/auth/auth/login', {email: user.email, password: user.password})
   }
 
 
@@ -50,7 +50,7 @@ export class AuthService {
   }
 
   signUp(email: string, password: string): Observable<UserInterface> {
-    return this.http.post<UserInterface>('/api/auth/register', {email, password})
+    return this.http.post<UserInterface>('/api/auth/auth/register', {email, password})
       .pipe(shareReplay(),
         tap(user => this.subject.next(user)),
         catchError(_ => {
@@ -62,7 +62,7 @@ export class AuthService {
   }
 
   login1(email: string, password: string): Observable<UserInterface> {
-    return this.http.post<UserInterface>('/api/auth/login', {email, password})
+    return this.http.post<UserInterface>('/api/auth/auth/login', {email, password})
       .pipe(
         shareReplay(),
         tap(user => {
@@ -77,13 +77,13 @@ export class AuthService {
   }
 
   logout() {
-    const ref = this.http.post('/api/auth/logout', {}).subscribe(_ => {
+    const ref = this.http.post('/api/auth/auth/logout', {}).subscribe(_ => {
       ref.unsubscribe()
     })
   }
 
   loginAsUser(email: string): Observable<any> {
-    return this.http.post<any>('/api/admin/impersonate', {email})
+    return this.http.post<any>('/api/auth/admin/impersonate', {email})
       .pipe(
         shareReplay(),
         tap(user => this.subject.next(user))

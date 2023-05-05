@@ -1,17 +1,88 @@
 const debug = require('debug')('auth_server:auth_server');
-const https = require('https');
-const {PRIVATE_KEY, PUBLIC_KEY} = require("../auth_server/data/security.utils");
-const {Server} = require('socket.io')
+const { createServer } = require('https');
+const { PRIVATE_KEY, PUBLIC_KEY } = require("../auth_server/data/security.utils");
+const { Server } = require('socket.io')
 const sessionTokenMiddleware = require("./auth");
-const {onDisconnect} = require("./defaultEvent");
-const {partial} = require("lodash");
+const { onDisconnect } = require("./defaultEvent");
+const { partial } = require("lodash");
+const express = require("express")
+const {chatOpened, sendMessage, getChats, getFriends, getLastMessages, getMessages} = require("../db");
+const {retrieveUserIdFromRequest} = require("./middleware/getUser.middleware");
+const cookieParser = require('cookie-parser');
 
-var options = {
+const options = {
   key: PRIVATE_KEY, cert: PUBLIC_KEY
 };
 
-var port = normalizePort(process.env.PORT || '3001');
-var server = https.createServer(options);
+const app = express()
+
+
+app.use(cookieParser())
+app.use(express.json())
+app.use(retrieveUserIdFromRequest)
+
+app.post("/chats", (req, res) => {
+  const id_user = req['user'].sub
+
+  if(id_user)
+    getChats(id_user)
+      .then(result => {
+        res.json(result)
+      })
+  else
+    res.sendStatus(401)
+})
+
+app.post('/message', (req, res) => {
+  const id_user = req['user'].sub
+  const chat_id = req.body.chatId
+
+  if(id_user && chat_id) {
+    getMessages(chat_id)
+      .then(result => {
+        res.json(result)
+      })
+  } else
+    res.sendStatus(400)
+})
+
+app.post('/message/last', (req, res) => {
+  const chats = req.body.chats
+  // TODO: check if user is in chats
+
+  if(chats.length > 0) {
+    getLastMessages(chats)
+      .then(result => {
+        res.json(result)
+      })
+  } else
+    res.json([]).send(400)
+})
+
+app.post("/friends", (req, res) => {
+  const id_user = req['user'].sub
+
+  if(id_user)
+    getFriends(id_user)
+      .then(result => {
+        res.json(result)
+      })
+  else
+    res.sendStatus(401)
+})
+
+app.post("/chat/open", (req, res) => {
+
+})
+
+app.post("/chat/send", (req, res) => {
+  const message = req.body
+  sendMessage(message.from.id, message.chat_id, message.type, message.cnt)
+  res.status(200).send({success: 'OK'})
+})
+
+const port = normalizePort(process.env.PORT || '3001');
+const server = createServer(options, app);
 
 const io = new Server(server, {cors: {origin: "https://localhost:4200"}})
 
@@ -20,43 +91,63 @@ io.use(sessionTokenMiddleware);
 io.on("connection", (socket) => {
   //console.log("user connected", socket.user.username)
 
-
   if(!socket.user) {
     console.log("user not authenticated")
     socket.disconnect()
     return
   }
 
-  const users = [];
+  console.log("user connected", socket.user.username)
+
+  // join the chats
+  socket.on("connect to chats", ({chats}) => {
+    console.log("connect to chats", chats)
+    socket.join(chats)
+  })
+
+  // private message
+  socket.on("private message", ({mes}) => {
+    console.log(socket.rooms)
+    console.log(mes.from.username + " -> " + mes.chat_id + ": " + mes.cnt)
+    socket.to(mes.chat_id).emit("private message", {
+      ...mes
+    })
+  })
+
+  // socket.on("disconnect", partial(onDisconnect, users, socket))
+
+
+
+  /* const users = [];
   for (let [id, socket] of io.of("/").sockets) {
     users.push({
       socketId: id,
       id: socket.user.id,
       username: socket.user.username,
     });
-  }
+  }*/
 
   // console.log("new user emit", users)
-  socket.emit("users_init", users);
+  //socket.emit("users_init", users);
 
 
-  console.log("user connected", socket.user.username)
 
-  socket.broadcast.emit("user connected",{
+
+  /* socket.broadcast.emit("user connected",{
     socketId: socket.id,
     id: socket.user.id,
     username: socket.user.username,
-  })
+  })*/
 
-  socket.on("private message", ({mes}) => {
+  /* socket.on("private message", ({mes}) => {
     //console.log("private message", mes)
-    console.log(mes.from.username, " -> " , mes.to.username, ": ", mes.cnt)
+     console.log(mes.from.username, " -> " , mes.to.username, ": ", mes.cnt)
     socket.to(mes.to.socketId).emit("private message", {
       ...mes
     })
-  })
+  })*/
 
-  socket.on("disconnect", partial(onDisconnect, users, socket))
+
 });
 
 io.on("close", (socket) => {

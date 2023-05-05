@@ -3,25 +3,30 @@ import {WebchatService} from "../services/webchat.service";
 import {filter, map, Observable, Subject, Subscription} from "rxjs";
 import {Router} from "@angular/router";
 import {UserInterface} from "../interfaces/user.interface";
-import {WebchatSelectors} from "../store/selectors/selectors-type";
+import {WebchatMessageSelectors, WebchatSelectors} from "../store/selectors/selectors-type";
 import {Store} from "@ngrx/store";
 import { WebchatActionsUser } from "../store/actions/actions-type";
 import {WebchatState} from "../store/reducers/index.reducer";
+import {ChatInterface} from "../interfaces/chat.interface";
+import {selectChats} from "../store/selectors/webchat.selector";
+import {MessageInterface} from "../interfaces/message.interface";
 
 @Component({
   selector: 'app-chat-list',
   template: `
-    <ul class="w-full h-screen py-5">
+    <ul class="w-full h-screen py-5" *ngIf="lastMessage$ | async as lastMessage">
         <li class="list-none rounded-[10px] w-full h-20 p-4 flex items-center my-2 cursor-pointer flex"
-            *ngFor="let user of (users$ | async)"
-            (click)="navigateChat(user)"
-            [class.bg-dark-secondary]="currentChat && currentChat.username == user.username"
+            *ngFor="let chat of (chats$ | async)"
+            (click)="navigateChat(chat)"
+            [class.bg-dark-secondary]="currentChat && currentChat.id == chat.id"
         >
 
           <img src="https://source.unsplash.com/random" class="w-14 h-14 rounded-lg mr-4">
           <div class="w-28 overflow-hidden">
-            <div class="text-white font-bold text-l">{{user.username}}</div>
-            <div class="overflow-hidden text-sm whitespace-nowrap text-ellipsis">Ciao come stai io sto bene</div>
+            <div class="text-white font-bold text-l">{{chat.name}}</div>
+            <div class="overflow-hidden text-sm whitespace-nowrap text-ellipsis">
+              {{lastMessage[chat.id]?.cnt}}
+            </div>
           </div>
 
         </li>
@@ -36,16 +41,13 @@ export class ChatListComponent implements OnInit, OnDestroy {
   store = inject(Store<WebchatState>)
 
   subs: Subscription[] = []
-  users$: Observable<UserInterface[]> = this.store.select(WebchatSelectors.selectUsers)
-    .pipe(
-      map(users => users.filter(user => !user.self))
-    )
-  currentChat$: Observable<UserInterface> = this.store.select(WebchatSelectors.selectCurrentChat).pipe(filter(user => !!user)) as Observable<UserInterface>
-  currentChat?: UserInterface
-
+  chats$: Observable<ChatInterface[]> = this.store.select(WebchatSelectors.selectChats)
+  currentChat$: Observable<ChatInterface> = this.store.select(WebchatSelectors.selectCurrentChat).pipe(filter(chat => !!chat)) as Observable<ChatInterface>
+  currentChat?: ChatInterface
+  lastMessage$: Observable<{[key: string]: MessageInterface}> = this.store.select(WebchatMessageSelectors.selectLastMessage)
   ngOnInit() {
-    this.subs.push(this.currentChat$.subscribe(user => {
-      this.currentChat = user
+    this.subs.push(this.currentChat$.subscribe(chat => {
+      this.currentChat = chat
     }))
   }
 
@@ -53,7 +55,7 @@ export class ChatListComponent implements OnInit, OnDestroy {
     this.subs.forEach(sub => sub.unsubscribe())
   }
 
-  navigateChat(user: UserInterface){
-    this.store.dispatch(WebchatActionsUser.setCurrentChat(user))
+  navigateChat(chat: ChatInterface){
+    this.store.dispatch(WebchatActionsUser.setCurrentChat(chat))
   }
 }

@@ -2,6 +2,7 @@ const argon2 = require("argon2");
 const {createSessionToken} = require("../../data/security.utils");
 const {db} = require("../../data/db");
 
+
 async function attempLogin(credentials, user)  {
   // verifica che la password corrisponde
   const isPasswordValid = await argon2.verify(user.passwordDigest, credentials.password)
@@ -33,6 +34,10 @@ async function createUserAndSession(res, credentials){
     const passwordDigest = await argon2.hash(credentials.password)
 
     // salva l'utente nel db
+    connection.query("select * from user where email = ?", [credentials.email], function (err, result) {
+      if (err) throw err;
+      console.log(result);
+    })
     const user = db.createUser(credentials.email, passwordDigest)
 
 

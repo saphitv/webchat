@@ -3,7 +3,7 @@ import {RouterModule, Routes} from '@angular/router';
 import {WebchatComponent} from "./webchat.component";
 
 const routes: Routes = [
-  { path: ':user', component: WebchatComponent},
+  { path: ':chat', component: WebchatComponent},
   { path: '', component: WebchatComponent },
 
 ];

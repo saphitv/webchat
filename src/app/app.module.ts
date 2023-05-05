@@ -15,16 +15,16 @@ import {AuthModule} from "./features/auth/auth.module";
 import { RouterState, StoreRouterConnectingModule } from '@ngrx/router-store';
 
 const config: SocketIoConfig = {
-  url: 'https://localhost:3001', // socket server url;
+  url: '/', // socket server url;
   options: {
-    transports: ['websocket']
+    transports: ['websocket'],
+    // path: '/socket',
   }
 }
 
 @NgModule({
   declarations: [
     AppComponent,
-
   ],
   imports: [
     BrowserModule,

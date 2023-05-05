@@ -1,4 +1,4 @@
-import {createAction} from "@ngrx/store";
+import {createAction, props} from "@ngrx/store";
 import {MessageInterface} from "../../interfaces/message.interface";
 
 export const sendMessage = createAction(
@@ -28,6 +28,22 @@ export const serverMessage = createAction(
 
 export const receiveMessageError = createAction(
   '[Webchat Effect] Receive Message Error'
+);
+
+
+export const loadChatMessages = createAction(
+  '[Webchat] Load Chat Messages',
+  props<{chatId: number}>()
+);
+
+export const loadChatMessagesSuccess = createAction(
+  '[Webchat] Load Chat Messages Success',
+  props<{messages: MessageInterface[], chatId: number}>()
+);
+
+export const loadChatMessagesFailure = createAction(
+  '[Webchat] Load Chat Messages Failure',
+  (messages: MessageInterface[]) => ({messages})
 );
 
 

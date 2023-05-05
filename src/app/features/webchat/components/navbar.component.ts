@@ -8,10 +8,10 @@ import {Store} from "@ngrx/store";
   template: `
     <div class="h-16 w-auto bg-dark-secondary m-5 rounded-[14px] mr-8 flex items-center justify-between">
       <ng-container
-        *ngIf="userToChatWith$ | async as userToChatWith">
+        *ngIf="currentChat$ | async as currentChat">
 
         <div class="font-bold text-lg ml-4">
-            {{userToChatWith.username}}
+            {{currentChat.name}}
         </div>
         <div class="mr-4">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 cursor-not-allowed">
@@ -28,6 +28,6 @@ import {Store} from "@ngrx/store";
 export class NavbarComponent {
   store = inject(Store<WebchatState>)
 
-  userToChatWith$ = this.store.select(WebchatSelectors.selectCurrentChat)
+  currentChat$ = this.store.select(WebchatSelectors.selectCurrentChat)
 
 }

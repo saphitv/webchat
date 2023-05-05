@@ -2,7 +2,7 @@ import {Component, inject, OnInit} from '@angular/core';
 import {WebchatService} from "./services/webchat.service";
 import {combineLatest, concatMap, filter, tap} from "rxjs";
 import {WebchatSelectors} from "./store/selectors/selectors-type";
-import { WebchatActionsUser } from "./store/actions/actions-type";
+import {WebchatActionsMessage, WebchatActionsUser} from "./store/actions/actions-type";
 import {WebchatState} from "./store/reducers/index.reducer";
 import {Store} from "@ngrx/store";
 import {ActivatedRoute, Router} from "@angular/router";
@@ -38,36 +38,43 @@ export class WebchatComponent implements OnInit {
   userSelected$ = this.store.select(WebchatSelectors.isUserSelected)
 
   constructor(private webchat: WebchatService, private activatedRoute: ActivatedRoute, private store: Store<WebchatState>){
-    const ref = combineLatest([
+    // load the current chat
+    // TODO: da decidere come far funzionare il routing con chat singole e chat di gruppo #8
+    // momentaneamente disabilitato perchè è da decidere come far funzionare il routing con chat singole e chat di gruppo
+    /*const ref = combineLatest([
       this.activatedRoute.params,
       this.store.select(WebchatSelectors.selectCurrentChat),
-      this.store.select(WebchatSelectors.areUsersLoaded)
+      this.store.select(WebchatSelectors.areChatsLoaded)
     ])
       .pipe(
-        /* tap(([params, currentChat, areUsersLoaded]) => console.log(params, currentChat, areUsersLoaded)), */
-        filter(([params, currentChat, areUsersLoaded]) => {
-          return areUsersLoaded && (!currentChat || params["user"] != currentChat.username)
+        filter(([params, currentChat, areChatsLoaded]) => {
+          return areChatsLoaded && (!currentChat  || params["chat"] != currentChat.id ) // il filtro veniva applicato se il parametro chat era uguale alla chat selezionata
         }),
         concatMap(([params, _, areUsersLoaded]) => {
           return this.store.select(WebchatSelectors.selectUserByName({name: params["user"]}))
         }),
-        tap(user => {
-          if(user) {
-            this.store.dispatch(WebchatActionsUser.setCurrentChat(user))
+        tap(chat => {
+          if(chat) {
+            this.store.dispatch(WebchatActionsUser.setCurrentChat(chat))
             ref.unsubscribe()
-
           }
           else
             this.router.navigateByUrl("/webchat")
 
-
         })
       )
-      .subscribe()
+      .subscribe()*/
   }
 
   ngOnInit(): void {
     this.webchat.connect()
+    this.store.select(WebchatSelectors.selectCurrentChat)
+      .pipe(
+        filter(chat => chat != null),
+        tap(chat => {
+          this.store.dispatch(WebchatActionsMessage.loadChatMessages({chatId: chat!.id}))
+        })
+      ).subscribe()
   }
 
 }
