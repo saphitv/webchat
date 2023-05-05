@@ -1,10 +1,10 @@
 {
-  "/api": {
+  "/api/auth": {
     "target": "https://localhost:3000/",
     "secure": false,
     "logLevel": "debug",
     "pathRewrite": {
-      "^/api": ""
+      "^/api/auth": ""
     }
   },
   "/socket.io": {
@@ -12,5 +12,12 @@
     "secure": false,
     "changeOrigin": true,
     "ws": true
+  },
+  "/api/webchat": {
+    "target": "https://localhost:3001",
+    "secure": false,
+    "pathRewrite": {
+      "^/api/webchat": ""
+    }
   }
 }
