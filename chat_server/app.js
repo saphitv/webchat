@@ -1,14 +1,20 @@
 const debug = require('debug')('auth_server:auth_server');
-const { createServer } = require('https');
-const { PRIVATE_KEY, PUBLIC_KEY } = require("../auth_server/data/security.utils");
-const { Server } = require('socket.io')
+const {createServer} = require('https');
+const {PRIVATE_KEY, PUBLIC_KEY} = require("../auth_server/data/security.utils");
+const {Server} = require('socket.io')
 const sessionTokenMiddleware = require("./auth");
-const { onDisconnect } = require("./defaultEvent");
-const { partial } = require("lodash");
 const express = require("express")
-const {chatOpened, sendMessage, getChats, getFriends, getLastMessages, getMessages} = require("../db");
 const {retrieveUserIdFromRequest} = require("./middleware/getUser.middleware");
 const cookieParser = require('cookie-parser');
+const {getNotFriends} = require("./db/query/notFriend");
+const {createChat} = require("./db/procedure/create-chat");
+const getAllFriends = require("./db/query/all-user");
+const getChats = require("./db/query/chats");
+const {getMessages} = require("./db/query/messages");
+const {getLastMessages} = require("./db/query/last-chat-message");
+const getFriends = require("./db/query/friends");
+const {sendMessage} = require("./db/procedure/send-message");
+const mysql = require("mysql");
 
 const options = {
   key: PRIVATE_KEY, cert: PUBLIC_KEY
@@ -21,11 +27,15 @@ app.use(cookieParser())
 app.use(express.json())
 app.use(retrieveUserIdFromRequest)
 
+const pool = mysql.createPool({
+  host: 'localhost', user: 'saphitv', password: 'saphitv', database: 'webchat', port: 3306
+})
+
 app.post("/chats", (req, res) => {
   const id_user = req['user'].sub
 
-  if(id_user)
-    getChats(id_user)
+  if (id_user)
+    getChats(pool, id_user)
       .then(result => {
         res.json(result)
       })
@@ -38,7 +48,7 @@ app.post('/message', (req, res) => {
   const chat_id = req.body.chatId
 
   if(id_user && chat_id) {
-    getMessages(chat_id)
+    getMessages(pool, chat_id)
       .then(result => {
         res.json(result)
       })
@@ -51,19 +61,19 @@ app.post('/message/last', (req, res) => {
   // TODO: check if user is in chats
 
   if(chats.length > 0) {
-    getLastMessages(chats)
+    getLastMessages(pool, chats)
       .then(result => {
         res.json(result)
       })
   } else
-    res.json([]).send(400)
+    res.status(400).json([])
 })
 
 app.post("/friends", (req, res) => {
   const id_user = req['user'].sub
 
-  if(id_user)
-    getFriends(id_user)
+  if (id_user)
+    getFriends(pool, id_user)
       .then(result => {
         res.json(result)
       })
@@ -71,20 +81,50 @@ app.post("/friends", (req, res) => {
     res.sendStatus(401)
 })
 
-app.post("/chat/open", (req, res) => {
+app.post("/not/friends", (req, res) => {
+  const id_user = req['user'].sub
 
+  if (id_user)
+    getNotFriends(pool, id_user)
+      .then(result => {
+        res.json(result)
+      })
+  else
+    res.sendStatus(401)
+})
+
+
+app.post("/friends/all", (req, res) => {
+  const id_user = req['user'].sub
+  getAllFriends(pool, id_user)
+    .then(result => {
+      res.json(result)
+    })
+})
+
+app.post("/chat/create", (req, res) => {
+  const id_user = req['user'].sub
+  const id_friends = req.body.users
+
+  if (id_user && id_friends) {
+    createChat(pool, id_user, id_friends)
+      .then(result => {
+        res.json(result)
+      })
+  } else
+    res.sendStatus(400)
 })
 
 app.post("/chat/send", (req, res) => {
   const message = req.body
-  sendMessage(message.from.id, message.chat_id, message.type, message.cnt)
+  sendMessage(pool, message.from.id, message.chat_id, message.type, message.cnt)
   res.status(200).send({success: 'OK'})
 })
 
 const port = normalizePort(process.env.PORT || '3001');
 const server = createServer(options, app);
 
-const io = new Server(server, {cors: {origin: "https://localhost:4200"}})
+const io = new Server(server, {cors: {origin: ["https://localhost:4200", 'm152.beta22550.com']}})
 
 io.use(sessionTokenMiddleware);
 
@@ -167,7 +207,7 @@ server.listen(port);
  */
 
 function normalizePort(val) {
-  var port = parseInt(val, 10);
+  let port = parseInt(val, 10);
 
   if (isNaN(port)) {
     // named pipe
@@ -191,7 +231,7 @@ function onError(error) {
     throw error;
   }
 
-  var bind = typeof port === 'string' ? 'Pipe ' + port : 'Port ' + port;
+  let bind = typeof port === 'string' ? 'Pipe ' + port : 'Port ' + port;
 
   // handle specific listen errors with friendly messages
   switch (error.code) {
@@ -213,7 +253,9 @@ function onError(error) {
  */
 
 function onListening() {
-  var addr = server.address();
-  var bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
+  let addr = server.address();
+  let bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
   debug('Listening on ' + bind);
 }
+
+

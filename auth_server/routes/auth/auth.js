@@ -8,12 +8,13 @@ const {createUserAndSession, loginAndBuildResponse} = require("./auth.utils");
 router.post('/register', function (req, res) {
   const credentials = req.body;
 
-  const passwordErrors = validatePassword(credentials.password)
+  // TODO: enable validation
+  // const passwordErrors = validatePassword(credentials.password)
 
-  if (passwordErrors.length > 0) {
+  /* if (passwordErrors.length > 0) {
     res.status(400).json({passwordErrors})
     return
-  }
+  } */
 
   createUserAndSession(res, credentials)
     .catch(err => {
@@ -26,18 +27,19 @@ router.post('/login', function (req, res) {
   const credentials = req.body;
 
 
-  const user = db.findUserByEmail(credentials.email)
+  db.findUserByEmail(credentials.email)
+    .then(user => {
+      if (!user) {
+        res.sendStatus(403)
+      } else {
+        loginAndBuildResponse(res, credentials, user)
+          .catch(err => {
+            console.log("error: login and build response", err)
+          })
+      }
+    })
 
 
-  if (!user) {
-    res.sendStatus(403)
-  } else {
-
-    loginAndBuildResponse(res, credentials, user)
-      .catch(err => {
-        console.log("error: login and build response", err)
-      })
-  }
 });
 
 router.post('/logout', function (req, res) {

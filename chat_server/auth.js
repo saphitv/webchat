@@ -21,6 +21,7 @@ const retrieveUserIdFromRequest = (jwt, socket, next) => {
         next()
       })
       .catch(err => {
+        console.log("invalid token")
         console.log(err.message)
         next()
       })

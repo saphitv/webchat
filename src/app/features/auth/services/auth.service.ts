@@ -49,8 +49,8 @@ export class AuthService {
       })*/
   }
 
-  signUp(email: string, password: string): Observable<UserInterface> {
-    return this.http.post<UserInterface>('/api/auth/auth/register', {email, password})
+  signUp(username: string, email: string, password: string): Observable<UserInterface> {
+    return this.http.post<UserInterface>('/api/auth/auth/register/', {username, email, password})
       .pipe(shareReplay(),
         tap(user => this.subject.next(user)),
         catchError(_ => {

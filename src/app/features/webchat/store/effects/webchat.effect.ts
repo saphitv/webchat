@@ -1,6 +1,6 @@
 import {inject, Injectable} from '@angular/core';
-import { Actions, createEffect, ofType } from '@ngrx/effects';
-import {catchError, combineLatest, concatMap, from, map, Observable, of, switchMap, tap} from 'rxjs';
+import {Actions, createEffect, ofType} from '@ngrx/effects';
+import {catchError, combineLatest, concatMap, map, Observable, of, switchMap, tap} from 'rxjs';
 import {Router} from "@angular/router";
 import {WebchatActionsChat, WebchatActionsMessage, WebchatActionsUser} from "../actions/actions-type";
 import {WebchatService} from "../../services/webchat.service";
@@ -8,7 +8,6 @@ import {MessageInterface} from "../../interfaces/message.interface";
 import {ChatInterface} from "../../interfaces/chat.interface";
 import {WebchatSelectors} from "../selectors/selectors-type";
 import {Store} from "@ngrx/store";
-import {AppState} from "../../../../store/reducers/index.reducer";
 import {WebchatState} from "../reducers/index.reducer";
 import {AuthSelectors} from "../../../auth/store/selectors/selectors-type";
 import {UserInterface} from "../../interfaces/user.interface";
@@ -33,7 +32,22 @@ export class WebchatEffect {
             map((m) => WebchatActionsChat.loadUsersFailure(m))
           )
         })
-  ))
+      ))
+
+  loadAllUsers$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(WebchatActionsChat.loadAllUsers),
+        concatMap(() => this.webchatService.getAllUsers()),
+        map((users) => WebchatActionsChat.loadAllUsersSuccess(users)),
+        catchError((err: any, caught: Observable<{ users: any[] }>): Observable<any> => {
+          console.log("Errore nel caricamento degli utenti")
+
+          return caught.pipe(
+            map((m) => WebchatActionsChat.loadAllUsersFailure(m))
+          )
+        })
+      ))
 
   loadChats$ = createEffect(
     () =>
@@ -54,22 +68,14 @@ export class WebchatEffect {
           })
         ),
 
-        tap(({chats, users}) => {
-          console.log("Chats: ", chats)
-          console.log("Users: ", users)
-
-          chats.forEach(chat => {
-            console.log(users.find(user => chat.users.includes(user.id)), chat.users.includes("1" as any))
-          })
-        }),
-
 
         // imposta il nome delle chat private
         map(({chats, users}) =>
           chats.map((chat: ChatInterface) => (
             {
               ...chat,
-              name: chat.name ? chat.name : users.filter(user => !user.self).find(user => chat.users.includes(user.id.toString() as any))?.username
+              name: chat.name ? chat.name : users.filter(user => !user.self).find(user => chat.users.includes(user.id.toString() as any))?.username,
+              messageLoaded: false
             }))
         ),
 
@@ -78,12 +84,13 @@ export class WebchatEffect {
         tap(chats => {
             const chatsId = chats.map(chat => chat.id)
 
-            this.webchatService.getLastMessage(chatsId)
-              .subscribe((message: MessageInterface) => {
-                // console.log("Ricevuto messaggio: ", message)
-                this.store.dispatch(WebchatActionsMessage.receiveMessage(message))
-              })
-        }
+            if (chatsId.length > 0)
+              this.webchatService.getLastMessage(chatsId)
+                .subscribe((message: MessageInterface) => {
+                  // console.log("Ricevuto messaggio: ", message)
+                  this.store.dispatch(WebchatActionsMessage.receiveMessage(message))
+                })
+          }
         ),
 
         map((chats) => WebchatActionsChat.loadChatsSuccess(chats)),
@@ -102,7 +109,7 @@ export class WebchatEffect {
     () =>
       this.actions$.pipe(
         ofType(WebchatActionsMessage.loadChatMessages),
-        concatMap((action) => combineLatest([
+        switchMap((action) => combineLatest([
           this.webchatService.getMessages(action.chatId),
           of(action.chatId)
         ])),
@@ -148,12 +155,70 @@ export class WebchatEffect {
         ofType(WebchatActionsMessage.serverMessage),
         map(action => WebchatActionsMessage.receiveMessage(action.message)),
         catchError((err: any, caught: Observable<{ message: MessageInterface }>): Observable<any> => {
-            console.log("Errore nella ricezione del messaggio")
+          console.log("Errore nella ricezione del messaggio")
 
-            return caught.pipe(
-              map((_) => WebchatActionsMessage.receiveMessageError())
-            )
+          return caught.pipe(
+            map((_) => WebchatActionsMessage.receiveMessageError())
+          )
         })
       )
     })
+
+  createChat$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(WebchatActionsChat.createChat),
+        concatMap((action) => this.webchatService.createChat(action.users)),
+        map((chat) => WebchatActionsChat.createChatRequest({chat})),
+        catchError((err: any, caught: Observable<{ chat: ChatInterface }>): Observable<any> => {
+          console.log("Errore nella creazione della chat")
+
+          return caught.pipe(
+            map((_) => WebchatActionsChat.createChatFailure(err))
+          )
+        })
+      ),
+    {dispatch: true}
+  )
+
+  createChatSuccess$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(WebchatActionsChat.createChatRequest),
+        tap(action => {
+          this.store.dispatch(WebchatActionsUser.setCurrentChat({chat: action.chat}))
+          this.webchatService.joinChat([action.chat.id])
+        }),
+        map(action => action.chat),
+        concatMap((chat) => combineLatest([
+          of(chat),
+          this.store.select(WebchatSelectors.selectUsers),
+          this.store.select(AuthSelectors.selectUserState)
+        ])),
+
+        // separa gli utenti in un array
+        map(([chat, users, userAuth]) =>
+          ({
+            chat: {...chat, users: (chat.users as any as string).split(":") as any as number[]} as ChatInterface,
+            users: users.map(user => ({...user, self: user.id == userAuth.id})) as any as UserInterface[]
+          })
+        ),
+
+
+        // imposta il nome delle chat private
+        map(({chat, users}) =>
+          ({
+            ...chat,
+            name: chat.name ? chat.name : users.filter(user => !user.self).find(user => chat.users.includes(user.id.toString() as any))?.username,
+            messageLoaded: true
+          })
+        ),
+        map((chat) => WebchatActionsChat.createChatSuccess({chat})),
+        catchError(_ => {
+          console.log("Errore nel routing verso la chat")
+          return of()
+        }),
+      ),
+    {dispatch: true}
+  );
 }
