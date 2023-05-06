@@ -27,9 +27,9 @@ export class RegisterComponent implements OnInit {
   store = inject(Store<AppState>)
 
   public form: FormGroup = this.fb.group({
-    email: ['test@angular-university.io', Validators.required],
-    password: ['Test12345', Validators.required],
-    username: ['test', Validators.required]
+    email: ['', Validators.required],
+    password: ['', Validators.required],
+    username: ['', Validators.required]
   })
 
   errors: string[] = []

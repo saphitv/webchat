@@ -46,7 +46,6 @@ async function createUserAndSession(res, credentials){
         if (!userExist) {
           await db.createUser(credentials.username, credentials.email, passwordDigest)
             .then(async (new_user) => {
-              console.log("user: ", new_user)
               const sessionToken = await createSessionToken(new_user)
 
               setSessionToken(res, sessionToken)

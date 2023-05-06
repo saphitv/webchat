@@ -8,14 +8,14 @@ const {createUserAndSession, loginAndBuildResponse} = require("./auth.utils");
 router.post('/register', function (req, res) {
   const credentials = req.body;
 
-  const passwordErrors = validatePassword(credentials.password)
+  // TODO: enable validation
+  // const passwordErrors = validatePassword(credentials.password)
 
-  if (passwordErrors.length > 0) {
+  /* if (passwordErrors.length > 0) {
     res.status(400).json({passwordErrors})
     return
-  }
+  } */
 
-  console.log("register: ", credentials)
   createUserAndSession(res, credentials)
     .catch(err => {
       console.log("create user and session: ", err)
