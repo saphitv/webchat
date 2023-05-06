@@ -1,11 +1,7 @@
 SET GLOBAL log_bin_trust_function_creators = 1;
 
-create procedure create_user
-    (
-        in pUsername varchar(100),
-        in pEmail varchar(100),
-        in pPassword varchar(500)
-    )
+create procedure create_user(IN pUsername varchar(100), IN pEmail varchar(100),
+                                                    IN pPassword varchar(500))
 begin
     declare vExist boolean default true;
 
@@ -22,12 +18,14 @@ begin
 end;
 
 
+
+
 create function create_chat(users varchar(4000)) returns int
 begin
     declare vUsers varchar(4000);
     declare vChatId int;
     declare nextValue int default 1;
-    declare vNameGroup varchar(100);
+    declare vNameGroup varchar(100) default 'Group';
     declare vNumUsers int;
 
     set vUsers = users;
@@ -44,7 +42,7 @@ begin
             -- commit;
             insert into webchat.chat_detail(fk_user, fk_chat) values (CAST(substr(vUsers, 1, nextValue - 1) as UNSIGNED), vChatId);
             set vNumUsers = vNumUsers + 1;
-            set vNameGroup = (select vNameGroup + ' ' + user.username from user where id_user = CAST(substr(vUsers, 1, nextValue - 1) as UNSIGNED));
+            set vNameGroup = CONCAT(vNameGroup, ', ', (select user.username from user where id_user = CAST(substr(vUsers, 1, nextValue - 1) as UNSIGNED)));
             set vUsers = substr(vUsers, nextValue + 1);
             set nextValue = 1;
         end if;
@@ -59,6 +57,8 @@ begin
 
     return vChatId;
 end;
+
+
 
 
 
