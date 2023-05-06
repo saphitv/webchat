@@ -1,48 +1,37 @@
 let LessonsData = require('./LessonsData')
 let UsersData = require('./UsersData')
+const mysql = require("mysql");
 
-class InMemoryDb {
-  userCounter = UsersData.length + 1
+class DB {
+  pool = mysql.createPool({
+    host: 'localhost', user: 'saphitv', password: 'saphitv', database: 'webchat', port: 3306
+  })
 
-  getLessons() {
-    return LessonsData
-  }
-
-  createUser(email, passwordDigest){
-    const id = this.userCounter++;
-
-    if(UsersData.find(user => user.email == email)){
-      throw Error("Email already registered")
-    }
-
-    const user = {
-      id,
-      email,
-      passwordDigest,
-      roles: ["USER"]
-    }
-
-    UsersData.push(user)
-
-    return user
-  }
-
-  getUsers(){
-    return UsersData
+  createUser(username, email, passwordDigest) {
+    return new Promise((resolve, reject) => this.pool.query(`call create_user(?, ?, ?)`, [username, email, passwordDigest], (err, result) => {
+      this.pool.query(`select id_user 'id', username, email, password 'passwordDigest' from user where username = ? and email = ?`, [username, email], (err, result) => {
+        if (err) reject(err)
+        resolve(result[0])
+      })
+    }))
   }
 
   findUserByEmail(email) {
-    return UsersData.find(user => user.email === email)
+    return new Promise((resolve, reject) => this.pool.query(`select id_user 'id', username, email, password 'passwordDigest' from user where email = ?`, [email], (err, result) => {
+      if (err) reject(err)
+      resolve(result[0])
+    }))
   }
 
   findUserById(id) {
-    return UsersData.find(user => user.id == id);
+    return new Promise((resolve, reject) => this.pool.query(`select id_user 'id', username, email, password 'passwordDigest' from user where id_user = ?`, [id], (err, result) => {
+      if (err) reject(err)
+      resolve(result[0])
+    }))
   }
 }
 
-
-
-const db = new InMemoryDb()
+const db = new DB()
 
 
 module.exports = {db}

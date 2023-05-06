@@ -4,10 +4,12 @@ const {db} = require("../../data/db");
 
 
 async function attempLogin(credentials, user)  {
+  console.log(credentials, user)
+
   // verifica che la password corrisponde
   const isPasswordValid = await argon2.verify(user.passwordDigest, credentials.password)
 
-  if(!isPasswordValid){
+  if (!isPasswordValid) {
     throw new Error("Password Invalid")
   }
 
@@ -22,9 +24,12 @@ async function loginAndBuildResponse(res, credentials, user){
     const sessionToken = await attempLogin(credentials, user)
     setSessionToken(res, sessionToken)
 
-    res.status(200).json({id: user.id, email: user.email, roles: user.roles, username: user.username})
+    // TODO: aggiungere i ruoli
+    res.status(200).json({id: user.id, email: user.email, roles: ["USER"] /* user.roles */, username: user.username})
 
-  } catch(err){res.sendStatus(403)}
+  } catch (err) {
+    res.sendStatus(403)
+  }
 }
 
 
@@ -34,22 +39,30 @@ async function createUserAndSession(res, credentials){
     const passwordDigest = await argon2.hash(credentials.password)
 
     // salva l'utente nel db
-    connection.query("select * from user where email = ?", [credentials.email], function (err, result) {
-      if (err) throw err;
-      console.log(result);
-    })
-    const user = db.createUser(credentials.email, passwordDigest)
+    await db.findUserByEmail(credentials.email)
+      .then(async (user) => {
+        // controlla se l'utente esiste già
+        const userExist = !!user
+        if (!userExist) {
+          await db.createUser(credentials.username, credentials.email, passwordDigest)
+            .then(async (new_user) => {
+              console.log("user: ", new_user)
+              const sessionToken = await createSessionToken(new_user)
 
+              setSessionToken(res, sessionToken)
 
-
-    console.log(db.getUsers())
-
-    // crea il jwt
-    const sessionToken = await createSessionToken(user)
-
-    setSessionToken(res, sessionToken)
-
-    res.status(200).json({id: user.id, email: user.email, username: user.username})
+              // TODO: aggiungere i ruoli
+              res.status(200).json({
+                id: new_user.id,
+                email: new_user.email,
+                username: new_user.username,
+                roles: ["USER"]
+              })
+            })
+        } else {
+          throw new Error("email già registrata")
+        }
+      })
   } catch (err){
     console.log("email già registrata", err)
     res.sendStatus(403)

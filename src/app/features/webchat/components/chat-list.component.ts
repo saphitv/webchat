@@ -20,7 +20,7 @@ import {MessageInterface} from "../interfaces/message.interface";
 
         <img src="https://source.unsplash.com/random" class="w-14 h-14 rounded-lg mr-4">
         <div class="w-28 overflow-hidden">
-          <div class="text-white font-bold text-l">{{chat.name}}</div>
+          <div class="text-white font-bold text-l overflow-hidden text-ellipsis whitespace-nowrap">{{chat.name}}</div>
           <div class="overflow-hidden text-sm whitespace-nowrap text-ellipsis">
             <ng-container *ngIf="lastMessage[chat.id]">{{lastMessage[chat.id].cnt}}</ng-container>
           </div>
@@ -60,6 +60,6 @@ export class ChatListComponent implements OnInit, OnDestroy {
   }
 
   navigateChat(chat: ChatInterface){
-    this.store.dispatch(WebchatActionsUser.setCurrentChat(chat))
+    this.store.dispatch(WebchatActionsUser.setCurrentChat({chat}))
   }
 }

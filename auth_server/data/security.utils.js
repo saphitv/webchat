@@ -12,7 +12,7 @@ const SESSION_DURATION = 60 * 30
 
 const createSessionToken = async user => {
   return signJwt({
-    roles: user.roles,
+    roles: ['USER'],// user.roles, // TODO
     username: user.username
   }, PRIVATE_KEY, {
     algorithm: 'RS512',

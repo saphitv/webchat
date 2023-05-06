@@ -1,16 +1,14 @@
 import {inject, Injectable} from '@angular/core';
-import {combineLatest, filter, from, map, Observable, of, switchMap, toArray} from "rxjs";
+import {combineLatest, filter, from, map, Observable, of, switchMap} from "rxjs";
 import {SocketService} from "../../../core/services/socket.service";
 import {AppState} from "../../../store/reducers/index.reducer";
 import {Store} from "@ngrx/store";
-import {AuthSelectors} from "../../auth/store/selectors/selectors-type";
-import {WebchatActionsChat, WebchatActionsMessage, WebchatActionsUser} from "../store/actions/actions-type";
+import {WebchatActionsChat, WebchatActionsMessage} from "../store/actions/actions-type";
 import {UserInterface} from "../interfaces/user.interface";
 import {MessageInterface} from "../interfaces/message.interface";
 import {HttpClient} from "@angular/common/http";
 import {ChatInterface} from "../interfaces/chat.interface";
 import {WebchatSelectors} from "../store/selectors/selectors-type";
-import {areUsersLoaded} from "../store/selectors/webchat.selector";
 
 @Injectable({
   providedIn: 'root'
@@ -33,7 +31,9 @@ export class WebchatService {
 
     const ref = this.store.select(WebchatSelectors.areUsersLoaded).pipe(filter(areUsersLoaded => areUsersLoaded)).subscribe(areUsersLoaded => {
       this.store.dispatch(WebchatActionsChat.loadChats())
-      ref.unsubscribe()
+      setTimeout(() => {
+        ref.unsubscribe()
+      }, 10);
     })
 
     const ref1 = this.store.select(WebchatSelectors.selectChats)
@@ -104,6 +104,10 @@ export class WebchatService {
     return this.http.post<UserInterface[]>("/api/webchat/friends/", {scope: "loading users"})
   }
 
+  getAllUsers(): Observable<UserInterface[]> {
+    return this.http.post<UserInterface[]>("/api/webchat/friends/all/", {scope: "loading all users"})
+  }
+
   getChats(): Observable<ChatInterface[]> {
     return this.http.post<ChatInterface[]>("/api/webchat/chats/", {scope: "loading chats"})
   }
@@ -111,8 +115,8 @@ export class WebchatService {
   getLastMessage(chats: number[]): Observable<MessageInterface> {
     return this.http.post<MessageInterface[]>("/api/webchat/message/last/", {chats})
       .pipe(
-      switchMap((messages: MessageInterface[]) =>
-        from(messages)
+        switchMap((messages: MessageInterface[]) =>
+          from(messages)
       ),
       switchMap(message =>
         combineLatest([of(message), this.store.select(WebchatSelectors.selectUsers)])
@@ -130,8 +134,19 @@ export class WebchatService {
           combineLatest([of(messages), this.store.select(WebchatSelectors.selectUsers)])
         ),
         map(([messages, users]) => {
-          return messages.map(message => ({ ...message, from: users.find((user: UserInterface) => user.id == (message.from as any as number)) } as MessageInterface))
+          return messages.map(message => ({
+            ...message,
+            from: users.find((user: UserInterface) => user.id == (message.from as any as number))
+          } as MessageInterface))
         }),
       )
+  }
+
+  createChat(users: number[]): Observable<ChatInterface> {
+    return this.http.post<ChatInterface>("/api/webchat/chat/create/", {users})
+  }
+
+  joinChat(chatIds: number[]): void {
+    this.socketService.emit("connect to chats", {chats: chatIds})
   }
 }

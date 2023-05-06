@@ -3,18 +3,22 @@ import {createFeatureSelector, createSelector} from "@ngrx/store";
 import {UserInterface} from "../../interfaces/user.interface";
 import {MessageInterface} from "../../interfaces/message.interface";
 
-const featureSelector = createFeatureSelector <WebchatState> ( 'webchat' );
+const featureSelector = createFeatureSelector<WebchatState>('webchat');
 
 export const selectUsers = createSelector(
   featureSelector,
   (state: WebchatState) => state.users);
+
+export const selectAllUsers = createSelector(
+  featureSelector,
+  (state: WebchatState) => state.allUsers);
 
 export const selectChats = createSelector(
   featureSelector,
   (state: WebchatState) => state.chats);
 export const selectCurrentChat = createSelector(featureSelector, (state: WebchatState) => state.currentChat);
 
-export const selectUserByName = (props: { name: string}) =>
+export const selectUserByName = (props: { name: string }) =>
   createSelector(selectUsers, (users: UserInterface[]) => {
     return users.find(u => u.username == props.name)
   })

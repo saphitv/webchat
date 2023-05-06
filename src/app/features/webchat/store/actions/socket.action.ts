@@ -1,4 +1,4 @@
-import {createAction} from "@ngrx/store";
+import {createAction, props} from "@ngrx/store";
 import {UserInterface} from "../../interfaces/user.interface";
 import {ChatInterface} from "../../interfaces/chat.interface";
 
@@ -10,6 +10,11 @@ export const setUsers = createAction(
 export const setChats = createAction(
   '[Webchat] Set Chats',
   (chats: ChatInterface[]) => ({chats})
+);
+
+export const addChat = createAction(
+  '[Webchat] Add Chat',
+  props<{ chat: ChatInterface }>()
 );
 
 export const disconnectUser = createAction(
@@ -24,7 +29,7 @@ export const connectUser = createAction(
 
 export const setCurrentChat = createAction(
   '[Webchat] Set Current Chat',
-  (chat: ChatInterface) => ({chat})
+  props<{ chat: ChatInterface }>()
 );
 
 export const loadedDB = createAction(

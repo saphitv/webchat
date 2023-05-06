@@ -21,6 +21,7 @@ const retrieveUserIdFromRequest = (jwt, socket, next) => {
         next()
       })
       .catch(err => {
+        console.log("invalid token")
         console.log(err.message)
         next()
       })
@@ -29,7 +30,7 @@ const retrieveUserIdFromRequest = (jwt, socket, next) => {
 
 module.exports = (socket, next) => {
   try {
-    const jwt = socket.request.headers.cookie.match("(^| )SESSIONID([^;]+)")[0].replace("SESSIONID=", "")
+    const jwt = socket.request.headers.cookie.match("(^| )SESSIONID([^;]+)")[0].replace(" ", "").replace("SESSIONID=", "")
 
     if(jwt)
       retrieveUserIdFromRequest(jwt, socket, next)

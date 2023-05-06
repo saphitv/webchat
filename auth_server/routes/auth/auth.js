@@ -15,6 +15,7 @@ router.post('/register', function (req, res) {
     return
   }
 
+  console.log("register: ", credentials)
   createUserAndSession(res, credentials)
     .catch(err => {
       console.log("create user and session: ", err)
@@ -26,18 +27,19 @@ router.post('/login', function (req, res) {
   const credentials = req.body;
 
 
-  const user = db.findUserByEmail(credentials.email)
+  db.findUserByEmail(credentials.email)
+    .then(user => {
+      if (!user) {
+        res.sendStatus(403)
+      } else {
+        loginAndBuildResponse(res, credentials, user)
+          .catch(err => {
+            console.log("error: login and build response", err)
+          })
+      }
+    })
 
 
-  if (!user) {
-    res.sendStatus(403)
-  } else {
-
-    loginAndBuildResponse(res, credentials, user)
-      .catch(err => {
-        console.log("error: login and build response", err)
-      })
-  }
 });
 
 router.post('/logout', function (req, res) {
