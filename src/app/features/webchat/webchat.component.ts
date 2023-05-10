@@ -11,22 +11,30 @@ import {ActivatedRoute, Router} from "@angular/router";
   selector: 'app-webchat',
   template: `
     <div class="flex">
-      <div class="flex overflow-hidden bg-slate-200 dark:bg-dark-primary rounded-l-[25px] h-screen w-full overflow-hidden">
+      <div
+        class="flex overflow-hidden bg-slate-200 dark:bg-dark-primary rounded-l-[25px] h-screen w-full overflow-hidden">
         <div class="w-[320px] pl-6 pt-6 pr-4 pb-4">
           <app-search-users></app-search-users>
           <app-chat-list></app-chat-list>
         </div>
         <div style="width: calc(100% - 320px)">
-          <ng-container *ngIf="userSelected$ | async as userSelected">
+          <ng-container *ngIf="userSelected$ | async as userSelected; else noUserSelected">
             <app-chat-body></app-chat-body>
           </ng-container>
 
+          <ng-template #noUserSelected>
+            <div class="flex flex-col items-center justify-center h-full">
+              <div class="text-2xl font-bold text-gray-500 dark:text-gray-400 mb-10">Seleziona una chat</div>
+              <img src="assets/vectors/no-chat-selected.svg" class="w-1/2 aspect-auto -translate-x-[10%]">
+            </div>
+          </ng-template>
+
         </div>
-          </div>
-          <!--<div class="w-[420px] bg-dark-thirdary">
-              <app-chat-details></app-chat-details>
-          </div>-->
       </div>
+      <!--<div class="w-[420px] bg-dark-thirdary">
+          <app-chat-details></app-chat-details>
+      </div>-->
+    </div>
   `,
   styles: [
   ]

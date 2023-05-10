@@ -1,6 +1,6 @@
 import {inject, Injectable} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
-import {catchError, concatMap, map, of, tap} from 'rxjs';
+import {catchError, concatMap, map, mergeMap, of, tap} from 'rxjs';
 import {AuthActions, LoginActions} from "../actions/actions-type";
 import {AuthService} from "../../services/auth.service";
 import {Store} from "@ngrx/store";
@@ -41,12 +41,16 @@ export class AuthEffects {
     () =>
       this.actions$.pipe(
         ofType(LoginActions.userLoggedIn),
-        concatMap((action) => this.auth.login(action.user)),
-        map(user => LoginActions.userLoggedInSuccess({user})),
-        catchError(_ => {
-          console.log("Errore nel caricare un utente")
-          return of(LoginActions.userLoggedInError())
-        })
+        mergeMap((action) =>
+          this.auth.login(action.user)
+            .pipe(
+              map(user => LoginActions.userLoggedInSuccess({user})),
+              catchError(_ => {
+                console.log("Errore nel login")
+                return of(LoginActions.userLoggedInError())
+              })
+            )
+        ),
       ),
     { dispatch: true }
   );

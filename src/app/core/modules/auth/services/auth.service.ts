@@ -29,7 +29,7 @@ export class AuthService {
   }
 
   login(user: LoginUserInterface): Observable<UserInterface> {
-    return this.http.post<UserInterface>('/api/auth/auth/login', {email: user.email, password: user.password})
+    return this.http.post<UserInterface>('/api/auth/auth/login', {username: user.username, password: user.password})
   }
 
 

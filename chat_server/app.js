@@ -2,7 +2,7 @@ const debug = require('debug')('auth_server:auth_server');
 const {createServer} = require('https');
 const {PRIVATE_KEY, PUBLIC_KEY} = require("../auth_server/data/security.utils");
 const {Server} = require('socket.io')
-const sessionTokenMiddleware = require("./auth");
+const sessionTokenMiddleware = require("./handler/auth");
 const express = require("express")
 const {retrieveUserIdFromRequest} = require("./middleware/getUser.middleware");
 const cookieParser = require('cookie-parser');
@@ -15,6 +15,8 @@ const {getLastMessages} = require("./db/query/last-chat-message");
 const getFriends = require("./db/query/friends");
 const {sendMessage} = require("./db/procedure/send-message");
 const mysql = require("mysql");
+const connectToChatsHandler = require("./handler/connectToChats");
+const privateMessageHandler = require("./handler/privateMessage");
 
 const options = {
   key: PRIVATE_KEY, cert: PUBLIC_KEY
@@ -121,6 +123,10 @@ app.post("/chat/send", (req, res) => {
   res.status(200).send({success: 'OK'})
 })
 
+
+/* ------------------------------------------------------------------------------------------
+SOCKET.IO
+------------------------------------------------------------------------------------------ */
 const port = normalizePort(process.env.PORT || '3001');
 const server = createServer(options, app);
 
@@ -140,54 +146,10 @@ io.on("connection", (socket) => {
   console.log("user connected", socket.user.username)
 
   // join the chats
-  socket.on("connect to chats", ({chats}) => {
-    console.log("connect to chats", chats)
-    socket.join(chats)
-  })
+  connectToChatsHandler(io, socket)
 
   // private message
-  socket.on("private message", ({mes}) => {
-    console.log(socket.rooms)
-    console.log(mes.from.username + " -> " + mes.chat_id + ": " + mes.cnt)
-    socket.to(mes.chat_id).emit("private message", {
-      ...mes
-    })
-  })
-
-  // socket.on("disconnect", partial(onDisconnect, users, socket))
-
-
-
-  /* const users = [];
-  for (let [id, socket] of io.of("/").sockets) {
-    users.push({
-      socketId: id,
-      id: socket.user.id,
-      username: socket.user.username,
-    });
-  }*/
-
-  // console.log("new user emit", users)
-  //socket.emit("users_init", users);
-
-
-
-
-  /* socket.broadcast.emit("user connected",{
-    socketId: socket.id,
-    id: socket.user.id,
-    username: socket.user.username,
-  })*/
-
-  /* socket.on("private message", ({mes}) => {
-    //console.log("private message", mes)
-     console.log(mes.from.username, " -> " , mes.to.username, ": ", mes.cnt)
-    socket.to(mes.to.socketId).emit("private message", {
-      ...mes
-    })
-  })*/
-
-
+  privateMessageHandler(io, socket)
 });
 
 io.on("close", (socket) => {
@@ -257,5 +219,3 @@ function onListening() {
   let bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
   debug('Listening on ' + bind);
 }
-
-

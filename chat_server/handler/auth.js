@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const {PUBLIC_KEY} = require("../auth_server/data/security.utils");
+const {PUBLIC_KEY} = require("../../auth_server/data/security.utils");
 
 const decodeJwt = token => {
   return jwt.verify(token, PUBLIC_KEY)

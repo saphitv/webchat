@@ -50,7 +50,7 @@ export class RegisterComponent implements OnInit {
   signUp() {
     let values = this.form.value
     this.authService.signUp(values.username, values.email, values.password).subscribe(() => {
-      this.store.dispatch(LoginActions.userLoggedIn({user: {email: values.email, password: values.password}}))
+      this.store.dispatch(LoginActions.userLoggedIn({user: {username: values.username, password: values.password}}))
       console.log("User created successfully")
       this.router.navigateByUrl('/webchat')
     }, error => console.log("Utente già esistente"))

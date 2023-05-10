@@ -15,7 +15,7 @@ import {AuthSelectors} from "../../store/selectors/selectors-type";
             class="shadow-2xl p-6 rounded-[20px] w-[450px] h-fit bg-white dark:bg-dark-primary">
         <h1 class="text-5xl font-bold mb-6">Login</h1>
         <div class="flex flex-col">
-          <input formControlName="email" type="text" placeholder="Email"
+          <input formControlName="username" type="text" placeholder="Username"
                  class="input w-full my-2 bg-slate-100 dark:bg-[#2a303c]"/><br>
           <input formControlName="password" type="password" placeholder="Password"
                  class="input w-full my-2 bg-slate-100 dark:bg-[#2a303c]"/><br>
@@ -36,7 +36,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   subs: Subscription[] = []
 
   public form: FormGroup = this.fb.group({
-    email: ['', Validators.required], password: ['', Validators.required],
+    username: ['', Validators.required], password: ['', Validators.required],
   })
 
   constructor(private fb: FormBuilder, private store: Store<AuthState>, private router: Router) {
@@ -58,9 +58,9 @@ export class LoginComponent implements OnInit, OnDestroy {
   login() {
     const val = this.form.value;
 
-    if (val.email && val.password) this.store.dispatch(LoginActions.userLoggedIn({
+    if (val.username && val.password) this.store.dispatch(LoginActions.userLoggedIn({
       user: {
-        email: val.email,
+        username: val.username,
         password: val.password
       }
     }))

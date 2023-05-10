@@ -8,7 +8,7 @@ const signJwt = util.promisify(jwt.sign)
 
 const PRIVATE_KEY = fs.readFileSync('cert/key.pem')
 const PUBLIC_KEY = fs.readFileSync('cert/certificate.pem')
-const SESSION_DURATION = 60 * 30
+const SESSION_DURATION = 60 * 60 * 24 // 1 day in seconds
 
 const createSessionToken = async user => {
   return signJwt({

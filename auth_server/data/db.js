@@ -29,6 +29,13 @@ class DB {
       resolve(result[0])
     }))
   }
+
+  findUserByUsername(username) {
+    return new Promise((resolve, reject) => this.pool.query(`select id_user 'id', username, email, password 'passwordDigest' from user where username = ?`, [username], (err, result) => {
+      if (err) reject(err)
+      resolve(result[0])
+    }))
+  }
 }
 
 const db = new DB()
