@@ -1,6 +1,20 @@
 import {inject, Injectable} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
-import {catchError, combineLatest, concatMap, map, Observable, of, switchMap, tap} from 'rxjs';
+import {
+  catchError,
+  combineLatest,
+  concat,
+  concatMap,
+  map,
+  MonoTypeOperatorFunction,
+  Observable,
+  of,
+  ReplaySubject,
+  switchMap,
+  take,
+  takeWhile,
+  tap
+} from 'rxjs';
 import {Router} from "@angular/router";
 import {WebchatActionsChat, WebchatActionsMessage, WebchatActionsUser} from "../actions/actions-type";
 import {WebchatService} from "../../services/webchat.service";
@@ -9,7 +23,7 @@ import {ChatInterface} from "../../interfaces/chat.interface";
 import {WebchatSelectors} from "../selectors/selectors-type";
 import {Store} from "@ngrx/store";
 import {WebchatState} from "../reducers/index.reducer";
-import {AuthSelectors} from "../../../auth/store/selectors/selectors-type";
+import {AuthSelectors} from "../../../../core/modules/auth/store/selectors/selectors-type";
 import {UserInterface} from "../../interfaces/user.interface";
 
 @Injectable()
@@ -181,15 +195,24 @@ export class WebchatEffect {
     {dispatch: true}
   )
 
+  // @ts-ignore
   createChatSuccess$ = createEffect(
     () =>
       this.actions$.pipe(
         ofType(WebchatActionsChat.createChatRequest),
-        tap(action => {
-          this.store.dispatch(WebchatActionsUser.setCurrentChat({chat: action.chat}))
-          this.webchatService.joinChat([action.chat.id])
+        // load eventual new user for the name
+        tap(_ => {
+          this.store.dispatch(WebchatActionsChat.setUsersLoaded({loaded: false}))
+          this.store.dispatch(WebchatActionsChat.loadAllUsers())
         }),
-        map(action => action.chat),
+
+        map((action: any) => (action.chat as ChatInterface)),
+
+        tap((chat: any) => {
+          this.store.dispatch(WebchatActionsUser.setCurrentChat({chat: chat}))
+          this.webchatService.joinChat([chat.id])
+        }),
+
         concatMap((chat) => combineLatest([
           of(chat),
           this.store.select(WebchatSelectors.selectUsers),
@@ -221,4 +244,19 @@ export class WebchatEffect {
       ),
     {dispatch: true}
   );
+
+  waitUntil<T>(notifier$: Observable<any>): MonoTypeOperatorFunction<T> {
+    return (source$: Observable<T>) => {
+      const buffer$ = new ReplaySubject<T>();
+      let doBuffer = true;
+      source$.pipe(takeWhile(() => doBuffer, true)).subscribe(buffer$);
+      return notifier$.pipe(
+        take(1),
+        switchMap(() => {
+          doBuffer = false;
+          return concat(buffer$, source$);
+        }),
+      );
+    };
+  }
 }

@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, inject, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {WebchatSelectors} from "../store/selectors/selectors-type";
 import {WebchatState} from "../store/reducers/index.reducer";
 import {Store} from "@ngrx/store";
@@ -6,7 +6,7 @@ import {Store} from "@ngrx/store";
 @Component({
   selector: 'app-navbar',
   template: `
-    <div class="h-16 w-auto bg-dark-secondary m-5 rounded-[14px] mr-8 flex items-center justify-between">
+    <div class="h-16 w-auto bg-white dark:bg-dark-secondary m-5 rounded-[14px] mr-8 flex items-center justify-between">
       <ng-container
         *ngIf="currentChat$ | async as currentChat">
 

@@ -35,6 +35,8 @@ export const WebchatReducer: ActionReducer<WebchatState> = createReducer(
   // load data from db
   on(WebchatActionsChat.loadUsersSuccess, (state, {users}) =>
     ({...state, users, usersLoaded: true})),
+  on(WebchatActionsChat.setUsersLoaded, (state, {loaded}) =>
+    ({...state, usersLoaded: loaded})),
   on(WebchatActionsChat.loadAllUsersSuccess, (state, {users}) =>
     ({...state, allUsers: users})),
   on(WebchatActionsChat.loadChatsSuccess, (state, {chats}) =>

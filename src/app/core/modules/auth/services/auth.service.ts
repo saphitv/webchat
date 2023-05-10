@@ -1,8 +1,8 @@
 import {Injectable} from '@angular/core';
 import {catchError, filter, map, Observable, of, ReplaySubject, shareReplay, Subject, tap} from "rxjs";
-import {UserInterface} from "../../../shared/interfaces/user/user.interface";
+import {UserInterface} from "../../../../shared/interfaces/user/user.interface";
 import {HttpClient} from "@angular/common/http";
-import {LoginUserInterface} from "../../../shared/interfaces/user/loginUser.interface";
+import {LoginUserInterface} from "../../../../shared/interfaces/user/loginUser.interface";
 
 export const ANONYMOUS_USER: UserInterface = {
   id: undefined,

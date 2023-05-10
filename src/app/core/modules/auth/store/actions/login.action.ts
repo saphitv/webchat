@@ -1,6 +1,6 @@
-import { createAction, props } from '@ngrx/store';
-import {UserInterface} from "../../../../shared/interfaces/user/user.interface";
-import {LoginUserInterface} from "../../../../shared/interfaces/user/loginUser.interface";
+import {createAction, props} from '@ngrx/store';
+import {UserInterface} from "../../../../../shared/interfaces/user/user.interface";
+import {LoginUserInterface} from "../../../../../shared/interfaces/user/loginUser.interface";
 
 export const loadUser = createAction(
   '[Auth Service] Load User'

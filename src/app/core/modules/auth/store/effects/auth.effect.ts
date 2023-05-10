@@ -1,9 +1,8 @@
 import {inject, Injectable} from '@angular/core';
-import { Actions, createEffect, ofType } from '@ngrx/effects';
+import {Actions, createEffect, ofType} from '@ngrx/effects';
 import {catchError, concatMap, map, of, tap} from 'rxjs';
 import {AuthActions, LoginActions} from "../actions/actions-type";
 import {AuthService} from "../../services/auth.service";
-import {Router} from "@angular/router";
 import {Store} from "@ngrx/store";
 
 @Injectable()

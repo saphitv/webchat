@@ -89,6 +89,7 @@
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
+          "liveReload": false,
           "configurations": {
             "production": {
               "browserTarget": "nodeSecurity:build:production"

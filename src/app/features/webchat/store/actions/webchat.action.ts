@@ -73,3 +73,8 @@ export const createChatFailure = createAction(
   '[Webchat] Create Chat Failure',
   (error: any) => ({error})
 );
+
+export const setUsersLoaded = createAction(
+  '[Webchat] Set Users Loaded',
+  props<{ loaded: boolean }>()
+);

@@ -1,6 +1,6 @@
 import {CoreState} from "../reducers/index.reducers";
 import {createFeatureSelector, createSelector} from "@ngrx/store";
-import {AuthSelectors} from "../../../features/auth/store/selectors/selectors-type";
+import {AuthSelectors} from "../../modules/auth/store/selectors/selectors-type";
 
 const featureSelector = createFeatureSelector<CoreState>('core');
 

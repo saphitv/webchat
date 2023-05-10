@@ -1,18 +1,18 @@
-import {NgModule, isDevMode} from '@angular/core';
+import {isDevMode, NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
 import {HttpClientModule} from "@angular/common/http";
-import {AuthService} from "./features/auth/services/auth.service";
+import {AuthService} from "./core/modules/auth/services/auth.service";
 import {SocketIoConfig, SocketIoModule} from "ngx-socket-io";
 import {CoreModule} from "./core/core.module";
-import { StoreModule } from '@ngrx/store';
+import {StoreModule} from '@ngrx/store';
 import {SharedModule} from "./shared/shared.module";
-import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import {StoreDevtoolsModule} from '@ngrx/store-devtools';
 import {EffectsModule} from "@ngrx/effects";
-import {AuthModule} from "./features/auth/auth.module";
-import { RouterState, StoreRouterConnectingModule } from '@ngrx/router-store';
+import {AuthModule} from "./core/modules/auth/auth.module";
+import {RouterState, StoreRouterConnectingModule} from '@ngrx/router-store';
 
 const config: SocketIoConfig = {
   url: '/', // socket server url;

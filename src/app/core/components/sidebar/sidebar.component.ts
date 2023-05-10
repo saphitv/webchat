@@ -5,7 +5,7 @@ import {SidebarService} from "../../services/sidebar.service";
 import {sidebarItem} from "../../interfaces/sidebar-item.interface"
 import {AppState} from "../../../store/reducers/index.reducer";
 import {Store} from "@ngrx/store";
-import {AuthSelectors} from "../../../features/auth/store/selectors/selectors-type";
+import {AuthSelectors} from "../../modules/auth/store/selectors/selectors-type";
 import {CoreSelectors} from "../../store/selectors/selectors-type";
 
 @Component({
@@ -35,7 +35,7 @@ import {CoreSelectors} from "../../store/selectors/selectors-type";
                           [ngClass]="{'hover:top-[-7px]': !sidebar.open}">
                           <a [routerLink]="item.url"
                              class="link no-underline w-full flex items-center cursor-pointer !border-[3px] rounded-[10px]  h-full whitespace-nowrap border overflow-hidden border-c-purple dark:border-c-red bg-c-purple dark:bg-c-red "
-                             [routerLinkActive]="['!bg-slate-50', 'dark:!bg-zinc-800']"
+                             [routerLinkActive]="['!bg-slate-100', 'dark:!bg-zinc-800']"
                              (click)="item.onClick()"
                           >
                               <div
@@ -55,7 +55,7 @@ import {CoreSelectors} from "../../store/selectors/selectors-type";
                           </a>
                           <span
                                   *ngIf="!sidebar.open"
-                                  class="tooltip top-0 left-[135px] -translate-x-1/2 shadow dark:bg-zinc-800 -translate-y-1/2 absolute top-0 rounded-md h-8 w-32 leading-9 text-center opacity-0 pointer-events-none block transition-all text-bold">{{item.name}}</span>
+                                  class="tooltip top-0 left-[135px] -translate-x-1/2 shadow bg-slate-100 dark:bg-zinc-800 -translate-y-1/2 absolute top-0 rounded-md h-8 w-32 leading-9 text-center opacity-0 pointer-events-none block transition-all text-bold">{{item.name}}</span>
                       </li>
               </ul>
 

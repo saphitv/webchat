@@ -1,10 +1,10 @@
 import {Component} from '@angular/core';
-import {AuthService} from "./features/auth/services/auth.service";
+import {AuthService} from "./core/modules/auth/services/auth.service";
 import {Observable, Subscription} from "rxjs";
 import {Router} from "@angular/router";
 import {ThemeService} from "./core/services/theme.service";
 import {SidebarService} from "./core/services/sidebar.service";
-import {LoginActions} from "./features/auth/store/actions/actions-type";
+import {LoginActions} from "./core/modules/auth/store/actions/actions-type";
 import {Store} from "@ngrx/store";
 import {AppState} from "./store/reducers/index.reducer";
 import {CoreSelectors} from "./core/store/selectors/selectors-type";
@@ -17,7 +17,7 @@ import {CoreSelectors} from "./core/store/selectors/selectors-type";
       <app-sidebar></app-sidebar>
     </div>
 
-      <div class="relative transition-all bg-zinc-800"
+      <div class="relative transition-all dark:bg-zinc-800 bg-slate-100"
            style="z-index: 0; width: calc(100vw - {{ leftWidth }}px); left: {{ leftWidth }}px">
           <router-outlet></router-outlet>
       </div>

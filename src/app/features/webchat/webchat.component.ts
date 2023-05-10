@@ -11,7 +11,7 @@ import {ActivatedRoute, Router} from "@angular/router";
   selector: 'app-webchat',
   template: `
     <div class="flex">
-      <div class="flex overflow-hidden bg-dark-primary rounded-l-[25px] h-screen w-full overflow-hidden">
+      <div class="flex overflow-hidden bg-slate-200 dark:bg-dark-primary rounded-l-[25px] h-screen w-full overflow-hidden">
         <div class="w-[320px] pl-6 pt-6 pr-4 pb-4">
           <app-search-users></app-search-users>
           <app-chat-list></app-chat-list>

@@ -1,6 +1,6 @@
 SET GLOBAL log_bin_trust_function_creators = 1;
 
-create procedure create_user(IN pUsername varchar(100), IN pEmail varchar(100),
+create x procedure create_user(IN pUsername varchar(100), IN pEmail varchar(100),
                                                     IN pPassword varchar(500))
 begin
     declare vExist boolean default true;

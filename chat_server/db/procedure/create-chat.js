@@ -1,6 +1,6 @@
 const createChat = (pool, from_id, friends_id) => {
   return new Promise((resolve, reject) =>
-    pool.query("select create_chat(?) 'id_chat'", [[from_id, ...friends_id].join(":") + ":"], (err, result) => {
+    pool.query("select create_chat(?) 'id_chat' from dual", [[from_id, ...friends_id].join(":") + ":"], (err, result) => {
       pool.query(`
       select distinct
     id_chat as id,

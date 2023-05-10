@@ -1,10 +1,10 @@
-import { createAction, props } from '@ngrx/store';
-import {UserInterface} from "../../../../shared/interfaces/user/user.interface";
-import {RegisterUserInterface} from "../../../../shared/interfaces/user/registerUser.interface";
+import {createAction, props} from '@ngrx/store';
+import {UserInterface} from "../../../../../shared/interfaces/user/user.interface";
+import {RegisterUserInterface} from "../../../../../shared/interfaces/user/registerUser.interface";
 
 export const registerUser = createAction(
   '[Register User Interface] User Loading',
-  props<{ user: RegisterUserInterface}>()
+  props<{ user: RegisterUserInterface }>()
 );
 
 export const registerUserSuccess = createAction(
