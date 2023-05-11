@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, ElementRef, inject, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, inject, ViewChild} from '@angular/core';
 import {WebchatSelectors} from "../store/selectors/selectors-type";
 import {WebchatState} from "../store/reducers/index.reducer";
 import {Store} from "@ngrx/store";
@@ -51,7 +51,10 @@ import {fromEvent} from "rxjs";
                 <input #renameInput (keyup.enter)="renameChat(currentChat, renameInput.value)" type="text"
                        placeholder="New Chat name"
                        class="input input-bordered mr-4" style="width: calc(100% - 6rem)"/>
-                <button (click)="renameChat(currentChat, renameInput.value)" class="btn">Save</button>
+                <button (click)="renameChat(currentChat, renameInput.value)" class="btn
+                bg-c-purple text-white border-none hover:bg-c-purple hover:opacity-80
+                dark:bg-c-red">Save
+                </button>
               </div>
 
             </div>
@@ -65,6 +68,7 @@ import {fromEvent} from "rxjs";
 })
 export class NavbarComponent {
   store = inject(Store<WebchatState>)
+  cdr = inject(ChangeDetectorRef)
 
   currentChat$ = this.store.select(WebchatSelectors.selectCurrentChat)
 
@@ -79,14 +83,16 @@ export class NavbarComponent {
     setTimeout(() => {
       this.renameInput.nativeElement.value = chat.name
       this.renameInput.nativeElement.focus()
-      fromEvent(this.closeRenameDialogRef.nativeElement, 'click').subscribe(() => {
-        this.closeRenameDialog()
+      fromEvent(this.closeRenameDialogRef.nativeElement, 'click').subscribe((event: any) => {
+        if (event.target.id === 'closeAddDialog')
+          this.closeRenameDialog()
       })
     }, 100)
   }
 
   closeRenameDialog() {
     this.showRenameDialog = false
+    this.cdr.detectChanges()
   }
 
   renameChat(chat: ChatInterface, newName: string) {
