@@ -49,16 +49,20 @@ export class InputbarComponent {
   )
 
   sendMessage(inputValue: HTMLInputElement){
+    if (inputValue.value.trim() == '') {
+      inputValue.value = ''
+      return
+    }
     this.messageInformation$
       .pipe(first())
       .subscribe(([currentChat, userAuthenticated]) => {
-      const message: MessageInterface = {
-        chat_id: currentChat!.id!,
-        cnt: inputValue.value,
-        type: 'TEXT',
-        from: userAuthenticated as UserInterface,
-        id: Math.random() * 1000000,
-        sendStatus: SendStatus.sending
+        const message: MessageInterface = {
+          chat_id: currentChat!.id!,
+          cnt: inputValue.value,
+          type: 'TEXT',
+          from: userAuthenticated as UserInterface,
+          id: Math.random() * 1000000,
+          sendStatus: SendStatus.sending
       }
 
       this.store.dispatch(WebchatActionsMessage.sendMessage(message))
