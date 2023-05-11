@@ -1,20 +1,6 @@
 import {inject, Injectable} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
-import {
-  catchError,
-  combineLatest,
-  concat,
-  concatMap,
-  map,
-  MonoTypeOperatorFunction,
-  Observable,
-  of,
-  ReplaySubject,
-  switchMap,
-  take,
-  takeWhile,
-  tap
-} from 'rxjs';
+import {catchError, combineLatest, concatMap, map, Observable, of, switchMap, tap} from 'rxjs';
 import {Router} from "@angular/router";
 import {WebchatActionsChat, WebchatActionsMessage, WebchatActionsUser} from "../actions/actions-type";
 import {WebchatService} from "../../services/webchat.service";
@@ -245,18 +231,50 @@ export class WebchatEffect {
     {dispatch: true}
   );
 
-  waitUntil<T>(notifier$: Observable<any>): MonoTypeOperatorFunction<T> {
-    return (source$: Observable<T>) => {
-      const buffer$ = new ReplaySubject<T>();
-      let doBuffer = true;
-      source$.pipe(takeWhile(() => doBuffer, true)).subscribe(buffer$);
-      return notifier$.pipe(
-        take(1),
-        switchMap(() => {
-          doBuffer = false;
-          return concat(buffer$, source$);
+  deleteChat$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(WebchatActionsChat.deleteChat),
+        concatMap((action) => this.webchatService.deleteChat(action.chat.id)),
+        map((chatId) => WebchatActionsChat.deleteChatSuccess({chatId})),
+        tap(action => {
+          this.webchatService.leaveChat(action.chatId)
+          this.store.dispatch(WebchatActionsUser.setCurrentChat({chat: null}))
         }),
-      );
-    };
-  }
+        catchError((err: any, caught: Observable<{ chatId: number }>): Observable<any> => {
+          console.log("Errore nella cancellazione della chat")
+
+          return caught.pipe(
+            map((_) => WebchatActionsChat.deleteChatFailure(err))
+          )
+        })
+      ),
+    {dispatch: true})
+
+  renameChat$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(WebchatActionsChat.renameChat),
+        concatMap((action) => this.webchatService.renameChat(action.chat.id, action.name)),
+
+        map(({chatId, name}) => WebchatActionsChat.renameChatSuccess({chatId, name})),
+        tap(action => {
+          this.store.select(WebchatSelectors.selectChatById({chatId: action.chatId}))
+            .pipe(
+              tap(chat => {
+                this.store.dispatch(WebchatActionsUser.setCurrentChat({chat: {...chat!, name: action.name}}))
+              })
+            )
+            .subscribe()
+            .unsubscribe()
+        }),
+        catchError((err: any, caught: Observable<{ chatId: number, name: string }>): Observable<any> => {
+          console.log("Errore while renaming chat", err)
+
+          return caught.pipe(
+            map((_) => WebchatActionsChat.renameChatFailure(err))
+          )
+        })
+      ),
+    {dispatch: true})
 }

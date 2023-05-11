@@ -17,6 +17,9 @@ const {sendMessage} = require("./db/procedure/send-message");
 const mysql = require("mysql");
 const connectToChatsHandler = require("./handler/connectToChats");
 const privateMessageHandler = require("./handler/privateMessage");
+const {deleteChat} = require("./db/procedure/delete-chat");
+const leaveChatHandler = require("./handler/leaveChat");
+const {renameChat} = require("./db/procedure/rename-chat");
 
 const options = {
   key: PRIVATE_KEY, cert: PUBLIC_KEY
@@ -123,6 +126,43 @@ app.post("/chat/send", (req, res) => {
   res.status(200).send({success: 'OK'})
 })
 
+app.post('/chat/delete', (req, res) => {
+  const id_user = req['user'].sub
+  const chat_id = req.body.chatId
+
+  if (id_user && chat_id) {
+    deleteChat(pool, id_user, chat_id)
+      .then(result => {
+        res.json(result)
+      })
+      .catch(err => {
+        console.log(err)
+        res.sendStatus(500)
+      })
+  } else {
+    res.sendStatus(400)
+  }
+})
+
+app.post('/chat/rename', (req, res) => {
+  const id_user = req['user'].sub
+  const chat_id = req.body.chatId
+  const name = req.body.name
+
+  if (id_user && chat_id && name) {
+    renameChat(pool, id_user, chat_id, name)
+      .then(result => {
+        res.json({result: 'OK'}).status(200).send()
+      })
+      .catch(err => {
+        console.log(err)
+        res.sendStatus(500)
+      })
+  } else {
+    res.sendStatus(400)
+  }
+})
+
 
 /* ------------------------------------------------------------------------------------------
 SOCKET.IO
@@ -150,6 +190,9 @@ io.on("connection", (socket) => {
 
   // private message
   privateMessageHandler(io, socket)
+
+  // disconnect
+  leaveChatHandler(io, socket)
 });
 
 io.on("close", (socket) => {
