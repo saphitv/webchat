@@ -20,6 +20,7 @@ const privateMessageHandler = require("./handler/privateMessage");
 const {deleteChat} = require("./db/procedure/delete-chat");
 const leaveChatHandler = require("./handler/leaveChat");
 const {renameChat} = require("./db/procedure/rename-chat");
+const {getUserByName} = require("./db/query/user-by-name");
 
 const options = {
   key: PRIVATE_KEY, cert: PUBLIC_KEY
@@ -34,6 +35,16 @@ app.use(retrieveUserIdFromRequest)
 
 const pool = mysql.createPool({
   host: 'localhost', user: 'saphitv', password: 'saphitv', database: 'webchat', port: 3306
+})
+
+app.get('/user', (req, res) => {
+  getUserByName(pool, req.query.username)
+    .then(result => {
+      res.status(200).json(result[0] || {})
+    })
+    .catch(err => {
+      res.status(500).json(err)
+    })
 })
 
 app.post("/chats", (req, res) => {

@@ -19,7 +19,7 @@ import {MessageInterface} from "../interfaces/message.interface";
           [class.bg-white]="currentChat && currentChat.id == chat.id"
       >
 
-        <img src="https://source.unsplash.com/random" class="w-14 h-14 rounded-lg mr-4 select-none">
+        <img src="https://source.unsplash.com/random/?city,night" class="w-14 h-14 rounded-lg mr-4 select-none">
         <div class="w-28 overflow-hidden">
           <div
             class="dark:text-white font-bold text-l overflow-hidden text-ellipsis whitespace-nowrap select-none">{{chat.name}}</div>

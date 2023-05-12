@@ -70,23 +70,24 @@ import {CoreSelectors} from "../../store/selectors/selectors-type";
 
               </div>
 
-              <div class="w-12 bg-c-purple dark:bg-c-red rounded m-0 transition-all flex items-center justify-between opacity-70 cursor-not-allowed"
-                   [ngClass]="{'!w-[240px] !-mx-4 h-[62px]': sidebar.open}">
-                  <div *ngIf="sidebar.open" class="flex items-center ml-2">
+            <div
+              class="w-12 bg-c-purple dark:bg-c-red rounded m-0 transition-all flex items-center justify-between opacity-70 cursor-not-allowed"
+              [ngClass]="{'!w-[240px] !-mx-4 h-[62px]': sidebar.open}">
+              <div *ngIf="sidebar.open" class="flex items-center ml-2">
 
-                    <div class="avatar online">
-                      <div class="h-10 w-10 rounded">
-                        <img src="https://source.unsplash.com/random" alt="user profile" class="">
-                      </div>
-                    </div>
+                <div class="avatar online">
+                  <div class="h-10 w-10 rounded">
+                    <img src="https://source.unsplash.com/random/?city,night" alt="user profile" class="">
+                  </div>
+                </div>
 
-                      <div class="ml-2">
-                          <div class="text-sm font-medium text-white">{{usernameLogged$ | async}}</div>
-                          <!--<div class="status">
-                              <div  class="circle"></div>
-                              <span class="nameStatus">online</span>
-                          </div>-->
-                      </div>
+                <div class="ml-2">
+                  <div class="text-sm font-medium text-white">{{usernameLogged$ | async}}</div>
+                  <!--<div class="status">
+                      <div  class="circle"></div>
+                      <span class="nameStatus">online</span>
+                  </div>-->
+                </div>
                   </div>
                   <div class="flex items-center justify-center w-12 h-12  text-white cursor-not-allowed cursor-pointer">
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
