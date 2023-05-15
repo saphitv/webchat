@@ -35,6 +35,8 @@ export const WebchatReducer: ActionReducer<WebchatState> = createReducer(
   // load data from db
   on(WebchatActionsChat.loadUsersSuccess, (state, {users}) =>
     ({...state, users, usersLoaded: true})),
+  on(WebchatActionsChat.setUsersLoaded, (state, {loaded}) =>
+    ({...state, usersLoaded: loaded})),
   on(WebchatActionsChat.loadAllUsersSuccess, (state, {users}) =>
     ({...state, allUsers: users})),
   on(WebchatActionsChat.loadChatsSuccess, (state, {chats}) =>
@@ -114,5 +116,11 @@ export const WebchatReducer: ActionReducer<WebchatState> = createReducer(
   on(WebchatActionsChat.searchChat, (state, props: { text: string }): WebchatState =>
     ({...state, textChatFilter: props.text})
   ),
+
+  on(WebchatActionsChat.deleteChatSuccess, (state, props: { chatId: number }): WebchatState =>
+    ({...state, chats: state.chats.filter(c => c.id != props.chatId)})),
+
+  on(WebchatActionsChat.renameChatSuccess, (state, props: { chatId: number, name: string }): WebchatState =>
+    ({...state, chats: state.chats.map(c => c.id == props.chatId ? {...c, name: props.name} : c)}))
 );
 

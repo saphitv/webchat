@@ -1,5 +1,4 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject} from "rxjs";
 import {CoreState} from "../store/reducers/index.reducers";
 import {Store} from "@ngrx/store";
 import {CoreActions} from "../store/actions/actions-type";
@@ -15,6 +14,12 @@ export class ThemeService  {
     if (savedTheme) {
       this.store.dispatch(CoreActions.setTheme({theme: savedTheme}))
     }
+    this.setFavicon(savedTheme)
+
+
+    /* setInterval(() => {
+      this.changeTheme()
+    }, 100) */
   }
 
   changeTheme() {
@@ -22,7 +27,20 @@ export class ThemeService  {
 
     this.store.select(CoreSelectors.selectTheme).subscribe(theme => {
       localStorage.setItem('theme', theme);
+
+      this.setFavicon(theme);
     }).unsubscribe()
 
   }
+
+  setFavicon(theme: 'light' | 'dark') {
+    let favicon = document.querySelector('link[rel="icon"]')
+    if (theme == 'dark') {
+      favicon?.setAttribute('href', 'assets/images/favicon-dark.png')
+    } else if (theme == 'light') {
+      favicon?.setAttribute('href', 'assets/images/favicon-light.png')
+    }
+  }
+
+
 }

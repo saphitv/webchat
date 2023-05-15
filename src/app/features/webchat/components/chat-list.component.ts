@@ -15,13 +15,16 @@ import {MessageInterface} from "../interfaces/message.interface";
       <li class="list-none rounded-[10px] w-full h-20 p-4 flex items-center my-2 cursor-pointer flex"
           *ngFor="let chat of (chats$ | async)"
           (click)="navigateChat(chat)"
-          [class.bg-dark-secondary]="currentChat && currentChat.id == chat.id"
+          [class.dark:bg-dark-secondary]="currentChat && currentChat.id == chat.id"
+          [class.bg-white]="currentChat && currentChat.id == chat.id"
       >
 
-        <img src="https://source.unsplash.com/random" class="w-14 h-14 rounded-lg mr-4">
+        <img src="https://source.unsplash.com/random/?city,night" class="w-14 h-14 rounded-lg mr-4 select-none">
         <div class="w-28 overflow-hidden">
-          <div class="text-white font-bold text-l overflow-hidden text-ellipsis whitespace-nowrap">{{chat.name}}</div>
-          <div class="overflow-hidden text-sm whitespace-nowrap text-ellipsis">
+          <div
+            class="dark:text-white font-bold text-l overflow-hidden text-ellipsis whitespace-nowrap select-none">{{chat.name}}</div>
+          <div
+            class="overflow-hidden text-sm whitespace-nowrap text-ellipsis text-gray-500 dark:text-slate-400 select-none">
             <ng-container *ngIf="lastMessage[chat.id]">{{lastMessage[chat.id].cnt}}</ng-container>
           </div>
         </div>

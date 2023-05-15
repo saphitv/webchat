@@ -1,19 +1,9 @@
-import {
-  AfterViewInit,
-  ChangeDetectionStrategy,
-  Component,
-  inject, OnDestroy,
-  OnInit,
-  SimpleChanges,
-  ViewChild
-} from '@angular/core';
-import {ActivatedRoute} from "@angular/router";
-import {concatMap, delay, filter, ReplaySubject, Subscription, tap} from 'rxjs';
+import {AfterViewInit, ChangeDetectionStrategy, Component, inject, OnDestroy, ViewChild} from '@angular/core';
+import {delay, Subscription, tap} from 'rxjs';
 import {Store} from "@ngrx/store";
 import {WebchatState} from "../store/reducers/index.reducer";
 import {WebchatSelectors} from "../store/selectors/selectors-type";
-import {AuthSelectors} from "../../auth/store/selectors/selectors-type";
-import {selectMessagesFromCurrentChat} from "../store/selectors/webchat.selector";
+import {AuthSelectors} from "../../../core/modules/auth/store/selectors/selectors-type";
 
 @Component({
   selector: 'app-chat-body',
@@ -32,7 +22,7 @@ import {selectMessagesFromCurrentChat} from "../store/selectors/webchat.selector
                 {{mes.from.username}}
               <!--<time class="text-xs opacity-50">12:45</time>-->
             </div>
-            <div class="chat-bubble">{{mes.cnt}}</div>
+            <div class="chat-bubble bg-white dark:bg-dark-secondary text-black dark:text-white">{{mes.cnt}}</div>
             <!--<div class="chat-footer opacity-50">
               Delivered
             </div>-->

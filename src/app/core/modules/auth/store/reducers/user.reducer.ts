@@ -1,6 +1,6 @@
-import { createReducer, on } from '@ngrx/store';
+import {createReducer, on} from '@ngrx/store';
 import {LoginActions} from "../actions/actions-type";
-import {UserInterface} from "../../../../shared/interfaces/user/user.interface";
+import {UserInterface} from "../../../../../shared/interfaces/user/user.interface";
 
 export interface UserState extends UserInterface {}
 

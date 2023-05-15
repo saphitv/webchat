@@ -9,7 +9,7 @@ import {ChatInterface} from "../../interfaces/chat.interface";
 import {WebchatSelectors} from "../selectors/selectors-type";
 import {Store} from "@ngrx/store";
 import {WebchatState} from "../reducers/index.reducer";
-import {AuthSelectors} from "../../../auth/store/selectors/selectors-type";
+import {AuthSelectors} from "../../../../core/modules/auth/store/selectors/selectors-type";
 import {UserInterface} from "../../interfaces/user.interface";
 
 @Injectable()
@@ -181,15 +181,24 @@ export class WebchatEffect {
     {dispatch: true}
   )
 
+  // @ts-ignore
   createChatSuccess$ = createEffect(
     () =>
       this.actions$.pipe(
         ofType(WebchatActionsChat.createChatRequest),
-        tap(action => {
-          this.store.dispatch(WebchatActionsUser.setCurrentChat({chat: action.chat}))
-          this.webchatService.joinChat([action.chat.id])
+        // load eventual new user for the name
+        tap(_ => {
+          this.store.dispatch(WebchatActionsChat.setUsersLoaded({loaded: false}))
+          this.store.dispatch(WebchatActionsChat.loadAllUsers())
         }),
-        map(action => action.chat),
+
+        map((action: any) => (action.chat as ChatInterface)),
+
+        tap((chat: any) => {
+          this.store.dispatch(WebchatActionsUser.setCurrentChat({chat: chat}))
+          this.webchatService.joinChat([chat.id])
+        }),
+
         concatMap((chat) => combineLatest([
           of(chat),
           this.store.select(WebchatSelectors.selectUsers),
@@ -221,4 +230,51 @@ export class WebchatEffect {
       ),
     {dispatch: true}
   );
+
+  deleteChat$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(WebchatActionsChat.deleteChat),
+        concatMap((action) => this.webchatService.deleteChat(action.chat.id)),
+        map((chatId) => WebchatActionsChat.deleteChatSuccess({chatId})),
+        tap(action => {
+          this.webchatService.leaveChat(action.chatId)
+          this.store.dispatch(WebchatActionsUser.setCurrentChat({chat: null}))
+        }),
+        catchError((err: any, caught: Observable<{ chatId: number }>): Observable<any> => {
+          console.log("Errore nella cancellazione della chat")
+
+          return caught.pipe(
+            map((_) => WebchatActionsChat.deleteChatFailure(err))
+          )
+        })
+      ),
+    {dispatch: true})
+
+  renameChat$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(WebchatActionsChat.renameChat),
+        concatMap((action) => this.webchatService.renameChat(action.chat.id, action.name)),
+
+        map(({chatId, name}) => WebchatActionsChat.renameChatSuccess({chatId, name})),
+        tap(action => {
+          this.store.select(WebchatSelectors.selectChatById({chatId: action.chatId}))
+            .pipe(
+              tap(chat => {
+                this.store.dispatch(WebchatActionsUser.setCurrentChat({chat: {...chat!, name: action.name}}))
+              })
+            )
+            .subscribe()
+            .unsubscribe()
+        }),
+        catchError((err: any, caught: Observable<{ chatId: number, name: string }>): Observable<any> => {
+          console.log("Errore while renaming chat", err)
+
+          return caught.pipe(
+            map((_) => WebchatActionsChat.renameChatFailure(err))
+          )
+        })
+      ),
+    {dispatch: true})
 }

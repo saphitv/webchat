@@ -1,7 +1,7 @@
 import {inject, Injectable} from '@angular/core';
 import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot, UrlTree} from '@angular/router';
 import {combineLatest, filter, map, Observable, tap} from 'rxjs';
-import {AuthSelectors} from "../../features/auth/store/selectors/selectors-type";
+import {AuthSelectors} from "../modules/auth/store/selectors/selectors-type";
 import {Store} from "@ngrx/store";
 import {AppState} from "../../store/reducers/index.reducer";
 

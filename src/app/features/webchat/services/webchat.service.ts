@@ -149,4 +149,25 @@ export class WebchatService {
   joinChat(chatIds: number[]): void {
     this.socketService.emit("connect to chats", {chats: chatIds})
   }
+
+  deleteChat(chatId: number): Observable<number> {
+    return this.http.post("/api/webchat/chat/delete/", {chatId})
+      .pipe(
+        map(() => chatId)
+      )
+  }
+
+  leaveChat(chatId: number): void {
+    this.socketService.emit("leave chat", {chatId})
+  }
+
+  renameChat(chatId: number, name: string): Observable<{ chatId: number, name: string }> {
+    return this.http.post<ChatInterface>("/api/webchat/chat/rename/", {chatId, name})
+      .pipe(
+        map(() => ({
+          chatId,
+          name
+        }))
+      )
+  }
 }

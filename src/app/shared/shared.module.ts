@@ -1,9 +1,8 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import {AuthService} from "../features/auth/services/auth.service";
+import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {AuthService} from "../core/modules/auth/services/auth.service";
 import {Router} from "@angular/router";
 import {AuthorizationGuard} from "../core/guard/authorization.guard";
-
 
 
 @NgModule({

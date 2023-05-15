@@ -4,8 +4,6 @@ const {db} = require("../../data/db");
 
 
 async function attempLogin(credentials, user)  {
-  console.log(credentials, user)
-
   // verifica che la password corrisponde
   const isPasswordValid = await argon2.verify(user.passwordDigest, credentials.password)
 

@@ -1,6 +1,6 @@
 SET GLOBAL log_bin_trust_function_creators = 1;
 
-create procedure create_user(IN pUsername varchar(100), IN pEmail varchar(100),
+create x procedure create_user(IN pUsername varchar(100), IN pEmail varchar(100),
                                                     IN pPassword varchar(500))
 begin
     declare vExist boolean default true;
@@ -77,6 +77,30 @@ begin
         FROM chat_detail
         WHERE fk_chat = chat_id;
 
+end;
+
+create procedure delete_chat(in from_id int, in chat_id int)
+begin
+    declare vMessageIsInsideGroup int;
+
+    set vMessageIsInsideGroup = (select count(*) from chat_detail where fk_user = from_id and fk_chat = chat_id);
+
+    if vMessageIsInsideGroup = 1 then
+        delete from chat c where c.id_chat = chat_id;
+    end if;
+end;
+
+create procedure rename_chat(in from_id int, in chat_id int, newName varchar(100))
+begin
+    declare vMessageIsInsideGroup int;
+
+    set vMessageIsInsideGroup = (select count(*) from chat_detail where fk_user = from_id and fk_chat = chat_id);
+
+    if vMessageIsInsideGroup = 1 then
+        update chat set
+            name = newName
+        where id_chat = chat_id;
+    end if;
 end;
 
 call send_message(1, 1, 'TEXT', 'test00000000');

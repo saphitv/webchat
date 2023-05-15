@@ -48,3 +48,8 @@ export const selectMessagesFromCurrentChat = createSelector(
 export const isUserSelected = createSelector(featureSelector, (state: WebchatState) => state.currentChat != null);
 
 export const selectTextChatFilter = createSelector(featureSelector, (state: WebchatState) => state.textChatFilter);
+
+export const selectChatById = (props: { chatId: number }) =>
+  createSelector(selectChats, (chats) => {
+    return chats.find(c => c.id == props.chatId)
+  })

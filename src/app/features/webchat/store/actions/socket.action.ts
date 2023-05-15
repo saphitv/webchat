@@ -29,7 +29,7 @@ export const connectUser = createAction(
 
 export const setCurrentChat = createAction(
   '[Webchat] Set Current Chat',
-  props<{ chat: ChatInterface }>()
+  props<{ chat: ChatInterface | null }>()
 );
 
 export const loadedDB = createAction(

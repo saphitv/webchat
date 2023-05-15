@@ -3,10 +3,10 @@ import {CoreState} from "../store/reducers/index.reducers";
 import {Store} from "@ngrx/store";
 import {CoreActions} from "../store/actions/actions-type";
 import {CoreSelectors} from "../store/selectors/selectors-type";
-import {LoginActions} from "../../features/auth/store/actions/actions-type";
+import {LoginActions} from "../modules/auth/store/actions/actions-type";
 import {Router} from "@angular/router";
 import {sidebarItem} from "../interfaces/sidebar-item.interface";
-import {AuthService} from "../../features/auth/services/auth.service";
+import {AuthService} from "../modules/auth/services/auth.service";
 
 @Injectable({
   providedIn: 'root'

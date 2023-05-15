@@ -73,3 +73,38 @@ export const createChatFailure = createAction(
   '[Webchat] Create Chat Failure',
   (error: any) => ({error})
 );
+
+export const setUsersLoaded = createAction(
+  '[Webchat] Set Users Loaded',
+  props<{ loaded: boolean }>()
+);
+
+export const deleteChat = createAction(
+  '[Webchat] Delete Chat',
+  props<{ chat: ChatInterface }>()
+);
+
+export const deleteChatSuccess = createAction(
+  '[Webchat] Delete Chat Success',
+  props<{ chatId: number }>()
+);
+
+export const deleteChatFailure = createAction(
+  '[Webchat] Delete Chat Failure',
+  (error: any) => ({error})
+);
+
+export const renameChat = createAction(
+  '[Webchat] Rename Chat',
+  props<{ chat: ChatInterface, name: string }>()
+);
+
+export const renameChatSuccess = createAction(
+  '[Webchat] Rename Chat Success',
+  props<{ chatId: number, name: string }>()
+);
+
+export const renameChatFailure = createAction(
+  '[Webchat] Rename Chat Failure',
+  (error: any) => ({error})
+);
